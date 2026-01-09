@@ -1,14 +1,52 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, } from 'react-native'
+import PressableIconButton from '../../components/button/pressable-icon-button'
+import { useNavigation } from '@react-navigation/native'
+import LogoText from '../../components/logo-text/logo-and-text'
+import SocialMeadia from './social-meadia'
 
 const LetsYouIn = () => {
-  return (
-    <>
-      <Text>LetsYouIn</Text>
-    </>
-  )
-}
+
+    const navigation = useNavigation();
+
+    return (
+
+        <>
+            <View>
+
+                <LogoText
+                    LogoHeader="Let’s You In"
+                    summaryStyle={{ display: "none" }}
+                    headerStyle={{
+                        fontSize: 16,
+                    }}
+                />
+
+                <View>
+                    <PressableIconButton
+                        ButtonTitle="Log In"
+                        onPress={() => navigation.navigate("log-in")}  // change target screen name
+                    />
+                    <PressableIconButton
+                        ButtonTitle="Sign In"
+                        onPress={() => navigation.navigate("sign-in")}  // change target screen name
+                    />
+                </View>
+
+                <Text style={styles.or}>Or</Text>
+
+                <SocialMeadia />
+
+            </View>
+        </>
+    )
+};
 
 export default LetsYouIn
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    or: {
+        textAlign: 'center',
+        marginTop: 24,
+        marginBottom: 15
+    }
+})
