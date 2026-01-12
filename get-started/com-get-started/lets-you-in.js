@@ -18,6 +18,8 @@ const LetsYouIn = () => {
                     summaryStyle={{ display: "none" }}
                     headerStyle={{
                         fontSize: 16,
+                        fontFamily: 'Urbanist_600SemiBold',
+                        fontSize: 25,
                     }}
                 />
 
@@ -25,10 +27,16 @@ const LetsYouIn = () => {
                     <PressableIconButton
                         ButtonTitle="Log In"
                         onPress={() => navigation.navigate("log-in")}  // change target screen name
+                        ButtonTitleClass={[
+                            styles.btnTextStylesClass,
+                        ]}
                     />
                     <PressableIconButton
                         ButtonTitle="Sign In"
                         onPress={() => navigation.navigate("sign-in")}  // change target screen name
+                        ButtonTitleClass={[
+                            styles.btnTextStylesClass,
+                        ]}
                     />
                 </View>
 
@@ -48,5 +56,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 24,
         marginBottom: 15
+    },
+    btnTextStylesClass: {
+        fontFamily: 'Urbanist_600SemiBold',
+        fontSize: 18,
     }
 })

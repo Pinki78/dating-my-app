@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Platform } from "react-native";
 const PressableIconButton = (props) => {
 
-  const { ButtonTitle, onPress, imageClass, imageSource, iconName, ClassiconName, altText } = props;
+  const { ButtonTitleClass ,ButtonTitle, onPress, imageClass, imageSource, iconName, ClassiconName, altText } = props;
 
   return (
     <>
@@ -29,7 +29,7 @@ const PressableIconButton = (props) => {
           <Ionicons name={iconName} size={20} color="#fff" style={[styles.icon , ClassiconName ]}  />
         ) : null}
 
-          <Text style={styles.text}>{ButtonTitle}</Text>
+          <Text style={[styles.text, ButtonTitleClass]}>{ButtonTitle}</Text>
         </LinearGradient>
       </Pressable>
     </>

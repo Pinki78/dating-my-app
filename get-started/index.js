@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 const GetStartedIndex = () => {
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container , styles.LetYouIn]}>
         <View>
           <LetsYouIn />
         </View>
@@ -20,6 +20,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     backgroundColor: "#fdecef",
   },
+
+  LetYouIn:{
+    justifyContent:'center',
+    // alignItems:'center',
+
+  }
   
 });
 
