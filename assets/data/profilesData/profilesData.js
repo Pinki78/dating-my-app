@@ -10,48 +10,55 @@ const getIdProfile = (title, suffix = "") => {
 };
 
 export const createProfiles = (
-
+  title,
+  image,
+  age,
+  gender,
+  profesional,
+  location,
+  description = "",
+  interests = [],
+  totalConins,
+  gallery = [],
+   PreferencesType// default
+) => {
+  return {
+    id: getIdProfile(title),
     title,
     image,
     age,
-    gender = [],
+    gender,
     profesional,
     location,
-    description = "",
-    interests = [],
+    description,
+  
+
+    ProInterests: interests.map((item) => ({
+      id: getIdProfile(item, "-interest"),
+      name: item,
+    })),
+
     totalConins,
-    gallery = [],
-) => {
 
-    return {
-        id: getIdProfile(title),
-        title,
-        image,
-        age,
-        gender,
-        profesional,
-        location,
-        description,
-        ProInterests: interests.map((item) => ({
-            id: getIdProfile(item, "-interest"),
-           name: item,
-        })),
+    ProGallery: gallery.map((gallery) => ({
+      id: getIdProfile(gallery, "-gallery"),
+      name: gallery,
+    })),
+    // PreferencesType: lookingForType.map((gallery) => ({
+    //   id: getIdProfile(lookingForType, "-id"),
+    //   name: lookingForType,
+    // })),
+     PreferencesType
+     
+  };
+};
 
-        totalConins,
-        ProGallery: gallery.map((gallery) => ({
-            id: getIdProfile(gallery, "-gallery"),
-            name: gallery,
-        })),
-
-    }
-
-}
 
 
 export const profiles_data = [
     createProfiles(
         "Aarav",
-       require('../assets/images/boys/aarav.jpg'),
+       require('../../image/boys/aarav.jpg'),
         "28",
         "Man",
         "IT Software",
@@ -63,15 +70,16 @@ export const profiles_data = [
         ["Travelling", "Photography", "Fitness"],
         120,
         [
-            '../../assets/images/boys/aarav1.jpg',
-            '../../assets/images/boys/aarav2.jpg',
-            '../../assets/images/boys/aarav3.jpg'
-        ]
+            '../../image/boys/aarav1.jpg',
+            '../../image/boys/aarav2.jpg',
+            '../../image/boys/aarav3.jpg'
+        ],
+        "Somthing casual"
     ),
 
     createProfiles(
         "Bharat",
-         require('../assets/images/boys/bharat.jpg'),
+         require('../../image/boys/bharat.jpg'),
         "30",
         "Man",
         "IT Software",
@@ -83,15 +91,16 @@ export const profiles_data = [
         ["Travelling", "Photography", "Fitness"],
         110,
         [
-            '../../assets/images/boys/aarav1.jpg',
-            '../../assets/images/boys/aarav2.jpg',
-            '../../assets/images/boys/aarav3.jpg'
-        ]
+            '../../image/boys/aarav1.jpg',
+            '../../image/boys/aarav2.jpg',
+            '../../image/boys/aarav3.jpg'
+        ],
+        "A relationship"
     ),
 
     createProfiles(
         "Chaitanya",
-         require('../assets/images/boys/chaitanya.jpg'),
+         require('../../image/boys/chaitanya.jpg'),
         "32",
         "Man",
         "IT Software",
@@ -103,15 +112,16 @@ export const profiles_data = [
         ["Travelling", "Photography", "Fitness"],
         130,
         [
-            '../../assets/images/boys/aarav1.jpg',
-            '../../assets/images/boys/aarav2.jpg',
-            '../../assets/images/boys/aarav3.jpg'
-        ]
+            '../../image/boys/aarav1.jpg',
+            '../../image/boys/aarav2.jpg',
+            '../../image/boys/aarav3.jpg'
+        ],
+        'I’m not sure yet'
     ),
 
     createProfiles(
         "Ananya",
-          require('../assets/images/girls/ananya.jpg'),
+          require('../../image/girls/ananya.jpg'),
         "26",
         "Woman",
         "Graphic Designer",
@@ -123,15 +133,16 @@ export const profiles_data = [
         ["Drawing", "Travelling", "Music"],
         118,
         [
-            '../../assets/images/girls/ananya1.jpg',
-            '../../assets/images/girls/ananya2.jpg',
-            '../../assets/images/girls/ananya3.jpg'
-        ]
+            '../../image/girls/ananya1.jpg',
+            '../../image/girls/ananya2.jpg',
+            '../../image/girls/ananya3.jpg'
+        ],
+        'Prefer not to say'
     ),
 
     createProfiles(
         "Riya",
-         require('../assets/images/girls/riya.jpg'),
+         require('../../image/girls/riya.jpg'),
         "24",
         "Woman",
         "Digital Marketer",
@@ -143,15 +154,16 @@ export const profiles_data = [
         ["Dancing", "Reading", "Yoga"],
         142,
         [
-            '../../assets/images/girls/riya1.jpg',
-            '../../assets/images/girls/riya2.jpg',
-            '../../assets/images/girls/riya3.jpg'
-        ]
+            '../../image/girls/riya1.jpg',
+            '../../image/girls/riya2.jpg',
+            '../../image/girls/riya3.jpg'
+        ],
+        "A relationship"
     ),
 
     createProfiles(
         "Suhana",
-          require('../assets/images/girls/suhana.jpg'),
+          require('../../image/girls/suhana.jpg'),
         "27",
         "Woman",
         "Fashion Stylist",
@@ -163,10 +175,11 @@ export const profiles_data = [
         ["Fashion", "Photography", "Cooking"],
         125,
         [
-            '../../assets/images/girls/suhana1.jpg',
-            '../../assets/images/girls/suhana2.jpg',
-            '../../assets/images/girls/suhana3.jpg'
-        ]
+            '../../image/girls/suhana1.jpg',
+            '../../image/girls/suhana2.jpg',
+            '../../image/girls/suhana3.jpg'
+        ],
+        "A relationship"
     ),
 
 

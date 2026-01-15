@@ -1,7 +1,14 @@
 import { StyleSheet, Text, View, FlatList, Linking } from "react-native";
 import PressableBtn from "../../components/button/pressable-btn";
-
+import { useNavigation } from '@react-navigation/native';
+import { useGoogleLogin } from "../../firebase/googleLogin";
+// import { useFacebookLogin } from "../../firebase/facebook-login";
 const SocialMeadia = () => {
+
+  const navigation = useNavigation();
+
+  const { promptAsync } = useGoogleLogin();
+  // const { promptAsync: facebookLogin } = useFacebookLogin(navigation);
   let Idsocial = 0;
 
   const getSocialId = (suffix = "") => {
@@ -14,26 +21,29 @@ const SocialMeadia = () => {
       id: getSocialId("Social"),
       name: " Login with Facebook",
       ImageUrl: require("../../assets/image/media/facebook.png"),
-      url: "https://www.facebook.com/login",
+      url: "",
+       onPress: () => facebookLogin(),
     },
-    {
-      id: getSocialId("Social"),
-      name: " Login with Instagram",
-      ImageUrl: require("../../assets/image/media/instagram.png"),
-      url: "https://www.instagram.com/accounts/login/",
-    },
+    // {
+    //   id: getSocialId("Social"),
+    //   name: " Login with Instagram",
+    //   ImageUrl: require("../../assets/image/media/instagram.png"),
+    //   url: "https://www.instagram.com/accounts/login/",
+    //   //  onPress: () => googleLogin(),
+    // },
     {
       id: getSocialId("Social"),
       name: " Login with Google",
       ImageUrl: require("../../assets/image/media/google.png"),
-      url: "https://accounts.google.com/",
+      url: "",
+      onPress: () => promptAsync(),
     },
-    {
-      id: getSocialId("Social"),
-      name: " Login with Iphone",
-      ImageUrl: require("../../assets/image/media/iphone.png"),
-      url: "https://appleid.apple.com/",
-    },
+    // {
+    //   id: getSocialId("Social"),
+    //   name: " Login with Iphone",
+    //   ImageUrl: require("../../assets/image/media/iphone.png"),
+    //   url: "https://appleid.apple.com/",
+    // },
   ];
 
   const socialRenderItem = ({ item, index }) => {
@@ -47,7 +57,7 @@ const SocialMeadia = () => {
           altText={item.name}
           imageSource={item.ImageUrl}
           btnText={item.name}
-          onPress={handlePress}
+          onPress={item.onPress}
           TouchableBtn={[
             styles.touchableBtn,
             { marginBottom: isLast ? 15 : 12 }, // 👈 dynamic

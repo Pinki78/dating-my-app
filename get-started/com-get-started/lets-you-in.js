@@ -33,7 +33,7 @@ const LetsYouIn = () => {
                     />
                     <PressableIconButton
                         ButtonTitle="Sign In"
-                        onPress={() => navigation.navigate("sign-in")}  // change target screen name
+                        onPress={() => navigation.navigate("creating-new-users")}  // change target screen name
                         ButtonTitleClass={[
                             styles.btnTextStylesClass,
                         ]}

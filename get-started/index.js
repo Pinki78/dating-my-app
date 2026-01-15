@@ -7,9 +7,9 @@ const GetStartedIndex = () => {
   return (
     <>
       <SafeAreaView style={[styles.container , styles.LetYouIn]}>
-        <View>
+      
           <LetsYouIn />
-        </View>
+        
       </SafeAreaView>
     </>
   )

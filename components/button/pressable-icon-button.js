@@ -57,8 +57,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#fff",
-    fontSize: 16,
     fontWeight: "600",
+     fontFamily: 'Urbanist_600SemiBold',
+        fontSize: 18,
   },
    image: {
     width: 20,
