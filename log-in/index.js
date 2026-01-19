@@ -35,7 +35,10 @@ const LogInIndex = () => {
     <>
       <SafeAreaProvider>
         <TouchableWithoutFeedback>
-          <SafeAreaView style={[styles.container,]} >
+          <SafeAreaView style={[styles.container,]}
+          
+          
+          >
             <LogoText
               LogoHeader="Welcome Back"
               Summary='Login to continue'

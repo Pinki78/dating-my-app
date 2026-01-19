@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, FlatList, Linking } from "react-native";
 import PressableBtn from "../../components/button/pressable-btn";
 import { useNavigation } from '@react-navigation/native';
 import { useGoogleLogin } from "../../firebase/googleLogin";
+
 // import { useFacebookLogin } from "../../firebase/facebook-login";
 const SocialMeadia = () => {
 

@@ -1,5 +1,6 @@
 import { useFonts } from "expo-font";
 import { Ionicons } from '@expo/vector-icons';
+import {Feather , SimpleLineIcons} from 'react-native-vector-icons';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -21,31 +22,35 @@ import {
   Mulish_700Bold,
 } from "@expo-google-fonts/mulish";
 
+import { Pressable } from 'react-native'
+
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebase";
-
-// import { SafeAreaProvider ,useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Provider } from 'react-redux';
 import { store } from "./react-redux-store/store.js";
 
 import { useState, useEffect } from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer,  } from '@react-navigation/native';
+import { ActivityIndicator, View } from "react-native";
 
 
-
+import HomeIndex from './home';
 import GetStartedIndex from './get-started';
 import LogInIndex from './log-in';
-import LookingForIndex from "./looking-for";
+import PreferListIndex from "./home/home-commpant/prefer-list/index.js";
 import ForGotPasswordindex from "./forgot-password";
 import CreatingNewUsersIndex from "./creating-new-users";
+import UploadPhotoScreen from "./upload-your-photo/index.js";
 
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const Stack = createNativeStackNavigator();
-  // const insets = useSafeAreaInsets();
-  // 🔹 All hooks FIRST
+
+  // const navigation = useNavigation();
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -59,20 +64,6 @@ export default function App() {
     Mulish_500Medium,
     Mulish_600SemiBold,
     Mulish_700Bold,
-
-
-    //  Inter_400Regular: require('./assets/fonts/Inter-Regular.ttf'),
-    // Inter_500Medium: require('./assets/fonts/Inter-Medium.ttf'),
-    // Inter_600SemiBold: require('./assets/fonts/Inter-SemiBold.ttf'),
-    // Inter_700Bold: require('./assets/fonts/Inter-Bold.ttf'),
-    // Urbanist_400Regular: require('./assets/fonts/Urbanist-Regular.ttf'),
-    // Urbanist_500Medium: require('./assets/fonts/Urbanist-Medium.ttf'),
-    // Urbanist_600SemiBold: require('./assets/fonts/Urbanist-SemiBold.ttf'),
-    // Urbanist_700Bold: require('./assets/fonts/Urbanist-Bold.ttf'),
-    // Mulish_400Regular: require('./assets/fonts/Mulish-Regular.ttf'),
-    // Mulish_500Medium: require('./assets/fonts/Mulish-Medium.ttf'),
-    // Mulish_600SemiBold: require('./assets/fonts/Mulish-SemiBold.ttf'),
-    // Mulish_700Bold: require('./assets/fonts/Mulish-Bold.ttf'),
   });
 
   const [user, setUser] = useState(null);
@@ -86,78 +77,64 @@ export default function App() {
     return unsub;
   }, []);
 
-  // 🔹 Only now we can return conditionally
   if (!fontsLoaded || loading) {
-    return null; // or splash/loading UI
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator>
-
+        <Stack.Navigator >
           {user ? (
-            <Stack.Screen name="looking-for" component={LookingForIndex} options={{ headerShown: false }} />
+           <>
+            <Stack.Screen name="prefer-list" component={PreferListIndex}  options={{ headerShown: false }}/>
+         
+             {/* <Stack.Screen
+              name="UploadPhoto"
+              component={UploadPhotoScreen}
+              options={{ headerShown: false }}
+            /> */}
+            <Stack.Screen name="home" component={HomeIndex} options={{ headerShown: false }} />
+           </>
           ) : (
             <>
-              <Stack.Screen name="GetStartedIndex" component={GetStartedIndex} options={{ headerShown: false }} />
-              <Stack.Screen name="log-in" component={LogInIndex} options={{ headerShown: false }} />
-              {/* <Stack.Screen name="sign-in" component={SignInIndex} options={{ headerShown: false }} /> */}
-              <Stack.Screen
-                name="forgot-password"
-                component={ForGotPasswordindex}
-                options={({ navigation }) => ({
-                  title: '',
-                  headerShadowVisible: false,
-                  headerTransparent: true,
-                  headerStyle: { backgroundColor: 'transparent' },
-                  headerLeft: () => (
-                    <Ionicons
-                      name="arrow-back-circle-outline"
-                      size={28}
-                      color="#000"
-                      style={{ marginLeft: 15 }}
-                      onPress={() => navigation.navigate('log-in')}
-                    />
-                  ),
-                })}
+              <Stack.Screen name="GetStartedIndex" component={GetStartedIndex}
+                options={{ headerShown: false }}
               />
-              <Stack.Screen
-                name="creating-new-users"
-                component={CreatingNewUsersIndex}
+              <Stack.Screen name="log-in" component={LogInIndex} options={{ headerShown: false }} />
+              <Stack.Screen name="forgot-password"
+                component={ForGotPasswordindex}
+                  options={({ navigation }) => ({
+                    headerShown: true,
+                    headerBackVisible: false,
+                    title: "",
+                    headerLeft: () => (
+                      <Pressable onPress={() => navigation.goBack('log-in')}>
+                        <Ionicons name="arrow-back-circle-outline" size={24} color="#000" />
+                      </Pressable>
+                    ),
+                  })}
+              />
+              <Stack.Screen name="creating-new-users" component={CreatingNewUsersIndex}
                 options={({ navigation }) => ({
-                  title: '',
-                  headerShadowVisible: false,
-                  headerTransparent: true,
-                  headerStyle: { backgroundColor: 'transparent' },
-
-                  headerLeft: () => (
-                    <Ionicons
-                      name="arrow-back-circle-outline"
-                      size={28}
-                      color="#000"
-                      style={{ marginLeft: 15 }}
-
-                      onPress={() => navigation.navigate('log-in')}
-                    />
-                  ),
-                })}
+                    headerShown: true,
+                    headerBackVisible: false,
+                    title: "",
+                    headerLeft: () => (
+                      <Pressable onPress={() => navigation.goBack('log-in')}>
+                        <Ionicons name="arrow-back-circle-outline" size={24} color="#000" />
+                      </Pressable>
+                    ),
+                  })}
               />
             </>
           )}
-
-
-
-
-
-
-
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
-
-
-
-
   );
 }

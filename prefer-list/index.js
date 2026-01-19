@@ -4,8 +4,9 @@ import { useLayoutEffect, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import PreferencesWrapper from './looking-for-comp/preferences-wrapper';
+import Headring from '../components/logo-text/headring';
 
-const LookingForIndex = () => {
+const PreferListIndex = () => {
     // const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
@@ -21,8 +22,16 @@ const LookingForIndex = () => {
   return (
     <>
       <SafeAreaProvider>
-        <SafeAreaView style={[styles.container, ]}>
-          <PreferencesWrapper />
+        <SafeAreaView style={[styles.container, ]} 
+        // contentContainerStyle={{ paddingTop: 20,
+          
+        //  }}
+        >
+          <Headring 
+          HeaderIingText='I am Looking for...'
+          SummaryText='Provide us with further insights into your preferences'
+          />
+          {/* <PreferencesWrapper /> */}
         </SafeAreaView>
       </SafeAreaProvider>
 
@@ -30,11 +39,16 @@ const LookingForIndex = () => {
   )
 }
 
-export default LookingForIndex
+export default PreferListIndex
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fdecef",
+    justifyContent:'center',
     paddingHorizontal: 24,
   },
+
+
+
 });

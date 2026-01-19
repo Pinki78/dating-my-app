@@ -33,18 +33,6 @@ const getIdProfile = (title, suffix = "") => {
     return `${profilesTitels}-${IdProfile}${suffix}`;
 };
 
-let IdInterests =  0;
-
-const getIdInterests = (interestsName, suffix = "", ) => {
-  const setinterestsTittleId = interestsName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  IdInterests++;
-  return `${setinterestsTittleId}${suffix}`;
-};
-
-
 export const createProfiles = (
   title,
   image,
@@ -53,10 +41,10 @@ export const createProfiles = (
   profesional,
   location,
   description = "",
-  interestsName = [],
+  interests = [],
   totalConins,
   gallery = [],
-   PreferencesType= '',// default
+   PreferencesType= [],// default
 ) => {
   return {
     id: getIdProfile(title),
@@ -68,11 +56,11 @@ export const createProfiles = (
     location,
     description,
 
-ProInterests: interestsName.map((item) => ({
-  id: getIdInterests(item, "-interest"), // ✅ pass item
-  name: item,
-  icon: interestIcons[item] || "star",
-})),
+    ProInterests: interests.map((item) => ({
+      id: getIdProfile(item, "-interest"),
+      name: item,
+       icon: interestIcons[item] || "star",
+    })),
 
     totalConins,
 
@@ -80,13 +68,18 @@ ProInterests: interestsName.map((item) => ({
       id: getIdProfile(gallery, "-gallery"),
       name: gallery,
     })),
-
-// ProPreferences:  PreferencesType.map((item) => ({
-//       id: getIdProfile(item, "-pre"),
-//       name: item,
+    // PreferencesType: lookingForType.map((gallery) => ({
+    //   id: getIdProfile(lookingForType, "-id"),
+    //   name: lookingForType,
+    // })),
+    
+     
+ProPreferences:  PreferencesType.map((item) => ({
+      id: getIdProfile(item, "-pre"),
+      name: item,
        
-//     })),
- PreferencesType,
+    })),
+
 
 
   };

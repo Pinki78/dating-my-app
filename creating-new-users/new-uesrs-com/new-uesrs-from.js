@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, TextInput, Pressable, Alert } from 'react-native';
+import COLORS from '../../assets/style/color';
 import { formFields } from '../data-form-user/formFields';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from "react-hook-form";
 import React, { useState } from 'react';
-import PressableIconButton from '../../components/button/pressable-icon-button';
+import PressableIconButtonGradient from '../../components/button/pressable-gradient-icon-button';
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -43,6 +44,7 @@ const NewUsersForm = () => {
 
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
+
                 email,
                 password
             );
@@ -71,14 +73,14 @@ const NewUsersForm = () => {
                     "This email is already registered. Please log in.",
                     [{ text: "Go to Login", onPress: () => navigation.replace("log-in") }]
                 );
-                 console.log("Signup error:", error);   // 👈 ADD THIS
+                console.log("Signup error:", error);   // 👈 ADD THIS
             } else {
                 Alert.alert("Error", error.message);
-                
+
             }
         } finally {
             setLoading(false);
-            
+
         }
     };
 
@@ -103,12 +105,12 @@ const NewUsersForm = () => {
                                             setOpenSelect(prev => (prev === fieldItms.id ? null : fieldItms.id))
                                         }
                                     >
-                                        <Text style={[styles.placeholder, value && styles.selected, { color: "#aaa" }]}>
+                                        <Text style={[styles.selectPlaceholder, value && styles.selected, { color: COLORS.greyishy }]}>
                                             {value
                                                 ? fieldItms.options.find(o => o.value === value)?.label
                                                 : fieldItms.placeholder}
                                         </Text>
-                                        <Ionicons name="chevron-down" size={18} color="#aaa" />
+                                        <Ionicons name="chevron-down" size={18} color={COLORS.greyishy} />
                                     </Pressable>
 
                                     {openSelect === fieldItms.id && (
@@ -116,13 +118,13 @@ const NewUsersForm = () => {
                                             {fieldItms.options.map(option => (
                                                 <Pressable
                                                     key={option.value}
-                                                    style={styles.option}
+                                                    style={[styles.option, { fontFamily: 'Urbanist_600SemiBold', }]}
                                                     onPress={() => {
                                                         onChange(option.value);
                                                         setOpenSelect(null);
                                                     }}
                                                 >
-                                                    <Text style={styles.optionText}>{option.label}</Text>
+                                                    <Text style={[styles.optionText, { fontFamily: 'Urbanist_600SemiBold', }]}>{option.label}</Text>
                                                 </Pressable>
                                             ))}
                                         </View>
@@ -141,9 +143,9 @@ const NewUsersForm = () => {
                             render={({ field: { onChange, value } }) => (
                                 <View style={styles.passwordWrapper}>
                                     <TextInput
-                                        style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]}
+                                        style={[styles.input, styles.passwordInput, { flex: 1, borderWidth: 0, marginBottom: 0 }]}
                                         placeholder={fieldItms.placeholder}
-                                        placeholderTextColor="#aaa"
+                                        placeholderTextColor={COLORS.greyishy}
                                         value={value}
                                         onChangeText={onChange}
                                         secureTextEntry={!showPassword}
@@ -170,7 +172,7 @@ const NewUsersForm = () => {
                                 <TextInput
                                     style={styles.input}
                                     placeholder={fieldItms.placeholder}
-                                    placeholderTextColor="#aaa"
+                                    placeholderTextColor={COLORS.greyishy}
                                     value={value}
                                     onChangeText={onChange}
                                     autoCapitalize="none"
@@ -186,8 +188,8 @@ const NewUsersForm = () => {
                 </View>
             ))}
 
-            {/* <PressableIconButton ButtonTitle="Sign Up" onPress={handleSubmit(onSubmit)} /> */}
-            <PressableIconButton
+            {/* <PressableIconButtonGradient ButtonTitle="Sign Up" onPress={handleSubmit(onSubmit)} /> */}
+            <PressableIconButtonGradient
                 ButtonTitle={loading ? "Please wait..." : "Sign Up"}
                 onPress={handleSubmit(onSubmit)}
                 disabled={loading}
@@ -201,36 +203,42 @@ export default NewUsersForm;
 const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
-        borderColor: "#ccc",
+        borderColor: COLORS.greyCcc,
         borderRadius: 6,
         padding: 12,
         marginBottom: 10,
+        fontFamily: 'Urbanist_600SemiBold',
     },
     inputWrapper: {
         width: '100%',
         marginBottom: 8,
     },
+    passwordInput: {
+        marginBottom: 0,
+    },
     passwordWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: COLORS.greyCcc,
         borderRadius: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 12,
+        // paddingHorizontal: 12,
+        // paddingVertical: 12,
         marginBottom: 10,
     },
     selectWrapper: { width: '100%' },
     selectoption: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        fontFamily: 'Urbanist_600SemiBold',
     },
+    selectPlaceholder: { fontFamily: 'Urbanist_600SemiBold', },
     dropdown: {
         position: 'absolute',
         top: 52,
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: COLORS.white,
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.15)',
         borderRadius: 6,
@@ -241,8 +249,9 @@ const styles = StyleSheet.create({
     },
     optionText: { padding: 10 },
     errorText: {
-        color: 'red',
+        color: COLORS.red,
         fontSize: 12,
         marginTop: 4,
+          fontFamily: 'Urbanist_600SemiBold',
     },
 });

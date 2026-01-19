@@ -2,9 +2,9 @@ import { StyleSheet, Text, Pressable , Image } from 'react-native'
 import { Ionicons } from "@expo/vector-icons"; // works on both
 import { LinearGradient } from "expo-linear-gradient";
 import { Platform } from "react-native";
-const PressableIconButton = (props) => {
+const PressableIconButtonGradient = (props) => {
 
-  const { ButtonTitleClass ,ButtonTitle, onPress, imageClass, imageSource, iconName, ClassiconName, altText } = props;
+  const { PressableClass, ButtonTitleClass ,ButtonTitle, onPress, imageClass, imageSource, iconName, ClassiconName, altText } = props;
 
   return (
     <>
@@ -13,6 +13,7 @@ const PressableIconButton = (props) => {
         android_ripple={{ color: "#ffffff40" }}
         style={({ pressed }) => [
           styles.wrapper,
+         PressableClass,
           pressed && styles.pressed,
           Platform.OS === "ios" && pressed && { opacity: 0.8 }, // 👈 opacity 0.8 on iOS
         ]}
@@ -36,7 +37,7 @@ const PressableIconButton = (props) => {
   )
 }
 
-export default PressableIconButton
+export default PressableIconButtonGradient
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -44,9 +45,9 @@ const styles = StyleSheet.create({
     overflow: "hidden", // required for ripple clipping
     marginBottom: 16,
   },
-  // pressed: {
-  //   opacity: 0.8, // 👈 this is your "Opacity 8"
-  // },
+  pressed: {
+    opacity: 0.8, // 👈 this is your "Opacity 8"
+  },
   gradient: {
     paddingVertical: 16,
     alignItems: "center",

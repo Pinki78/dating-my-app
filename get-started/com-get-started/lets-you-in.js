@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, } from 'react-native'
-import PressableIconButton from '../../components/button/pressable-icon-button'
+import PressableIconButtonGradient from '../../components/button/pressable-gradient-icon-button'
 import { useNavigation } from '@react-navigation/native'
 import LogoText from '../../components/logo-text/logo-and-text'
 import SocialMeadia from './social-meadia'
@@ -24,14 +24,14 @@ const LetsYouIn = () => {
                 />
 
                 <View>
-                    <PressableIconButton
+                    <PressableIconButtonGradient
                         ButtonTitle="Log In"
                         onPress={() => navigation.navigate("log-in")}  // change target screen name
                         ButtonTitleClass={[
                             styles.btnTextStylesClass,
                         ]}
                     />
-                    <PressableIconButton
+                    <PressableIconButtonGradient
                         ButtonTitle="Sign In"
                         onPress={() => navigation.navigate("creating-new-users")}  // change target screen name
                         ButtonTitleClass={[

@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native'
 import LetsYouIn from './com-get-started/lets-you-in'
-
+import COLORS from '../assets/style/color'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const GetStartedIndex = () => {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    backgroundColor: "#fdecef",
+    backgroundColor: COLORS.whiteSmoke,
   },
 
   LetYouIn:{
