@@ -12,7 +12,7 @@ const COLORS = {
   blue2A3E93:'#2A3E93',
   grey747474:'#747474',
   grey595959:'#595959',
-  pinkiDark:'#D6057B'
+  pinkiDark:'#f10020'
 
 };
 export default COLORS
