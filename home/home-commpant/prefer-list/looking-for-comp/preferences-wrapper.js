@@ -3,14 +3,14 @@ import PreferencesList from './preferences-list'
 
 const PreferencesWrapper = (porps) => {
 
-  const {setShowInterests, showInterests} = porps;
+  const {setShowInterests, showInterests,  selectedPreferences, setSelectedPreferences} = porps;
   return (
     <View>
       <PreferencesList
         // Preferences={Preferences}
         // onContinue={onContinue}
-        // selectedPreferences={selectedPreferences}
-        // setSelectedPreferences={setSelectedPreferences}
+        selectedPreferences={selectedPreferences}
+        setSelectedPreferences={setSelectedPreferences}
         setShowInterests={setShowInterests}
          showInterests={showInterests}
       />

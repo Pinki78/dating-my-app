@@ -5,31 +5,46 @@ import {
   FlatList,
   Pressable,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState,   useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import COLORS from '../../../../assets/style/color'
 import PressableIconButtonGradient from '../../../../components/button/pressable-gradient-icon-button'
-import { useSelector } from 'react-redux'
+
 import CongratulationsIndex from '../../../../components/congratulations/congratulations-index'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadProfiles } from '../../../../react-redux-store/store-comp/uploadProfiles'
 
 
+const PreferencesList = (props) => {
+  const { setShowInterests, selectedPreferences, setSelectedPreferences } = props
 
-const PreferencesList = (porps) => {
+  const dispatch = useDispatch()
 
-const {setShowInterests, showInterests} = porps;
-  const profiles = useSelector(
-    state => state.profilesApi.profilesState
+  const { profilesState, loading } = useSelector(
+    state => state.profilesApi
   )
 
   const [showCongrats, setShowCongrats] = useState(false)
-  // ✅ MULTI SELECT STATE
 
+  // 🔥 LOAD FIREBASE DATA
+  useEffect(() => {
+    dispatch(loadProfiles())
+  }, [])
+
+  // 🔥 SAFE preferences extraction (STRING OR ARRAY)
   const preferences = [
-    ...new Set(profiles.map(p => p.PreferencesType).filter(Boolean))
+    ...new Set(
+      profilesState.flatMap(p => {
+        if (Array.isArray(p.PreferencesType)) {
+          return p.PreferencesType
+        }
+        if (typeof p.PreferencesType === 'string') {
+          return [p.PreferencesType]
+        }
+        return []
+      })
+    )
   ]
-
-
-  const [selectedPreferences, setSelectedPreferences] = useState([])
 
   const toggleSelect = (value) => {
     setSelectedPreferences(prev =>
@@ -40,14 +55,14 @@ const {setShowInterests, showInterests} = porps;
   }
 
   const savePreferences = async () => {
-    if (selectedPreferences.length === 0) return
+    if (!selectedPreferences.length) return
 
     await AsyncStorage.setItem(
       'USER_PREFERENCES',
       JSON.stringify(selectedPreferences)
     )
-setShowCongrats(true)
-    // onContinue(selectedPreferences) // ✅ PASS TO PARENT
+
+    setShowCongrats(true)
   }
 
   const renderItem = ({ item }) => {
@@ -60,20 +75,28 @@ setShowCongrats(true)
       >
         <Text style={styles.pref}>{item}</Text>
 
-        <View style={[styles.radio, isSelected && styles.radioActive]}>
-          {isSelected && <View style={styles.radioDot} />}
-        </View>
+        <Text style={styles.radio}>
+          {isSelected ? '●' : '○'}
+        </Text>
       </Pressable>
     )
   }
 
+  if (loading) {
+    return <Text style={{ textAlign: 'center' }}>Loading...</Text>
+  }
+
   return (
     <>
-      <FlatList
-        data={preferences}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-      />
+      {preferences.length === 0 ? (
+        <Text style={{ textAlign: 'center' }}>No preferences found</Text>
+      ) : (
+        <FlatList
+          data={preferences}
+          keyExtractor={(item, index) => `${item}-${index}`}
+          renderItem={renderItem}
+        />
+      )}
 
       <PressableIconButtonGradient
         ButtonTitle="Continue"
@@ -83,20 +106,20 @@ setShowCongrats(true)
       />
 
       {showCongrats && (
-          <CongratulationsIndex
-            visible={showCongrats}
-            // selectedPreferences={selectedPreferences}
-            onDone={() => {
-              setShowCongrats(false)
-              setShowInterests(true)
-            }}
-          />
-        )}
+        <CongratulationsIndex
+          visible={showCongrats}
+          onDone={() => {
+            setShowCongrats(false)
+            setShowInterests(true)
+          }}
+        />
+      )}
     </>
   )
 }
 
 export default PreferencesList
+
 
 const styles = StyleSheet.create({
   card: {

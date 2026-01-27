@@ -1,16 +1,17 @@
 import { StyleSheet, } from "react-native";
 import { SafeAreaView, SafeAreaProvider, } from 'react-native-safe-area-context'
-import { useLayoutEffect, useState , useEffect } from 'react'
+import { useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigation } from "@react-navigation/native";
 import HeaderIocnText from "../../../components/cutom-header/header-iocn-text";
 import CommpantText from "../../../components/logo-text/commpant-text";
 import InterestsList from "./interests-list";
 import UploadPhotoScreen from "../../../upload-your-photo";
 
-
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback } from 'react';
 
 const YourInterestsIndex = (props) => {
-  const { onBack, } = props;
+  const { onBack, PreferencesInput } = props;
   const [showUploadPhoto, setShowUploadPhoto] = useState(false)
   const navigation = useNavigation();
 
@@ -23,23 +24,52 @@ const YourInterestsIndex = (props) => {
   }, [navigation]);
 
 
+const handleBack = async () => {
+  await AsyncStorage.removeItem("USER_INTERESTS");
+  setSelectedInterests([]);
+  onBack();
+};
+
   const [selectedInterests, setSelectedInterests] = useState([]);
 
   // Restore saved interests (optional but recommended)
-  useEffect(() => {
-    const loadInterests = async () => {
-      const saved = await AsyncStorage.getItem("USER_INTERESTS");
-      if (saved) {
-        setSelectedInterests(JSON.parse(saved));
-      }
-    };
-    loadInterests();
-  }, []);
+  // useEffect(() => {
+  //   const loadInterests = async () => {
+  //     const saved = await AsyncStorage.getItem("USER_INTERESTS");
+  //     if (saved) {
+  //       setSelectedInterests(JSON.parse(saved));
+  //     }
+  //   };
+  //   loadInterests();
+  // }, []);
+
+// useEffect(() => {
+//   const loadSavedInterests = async () => {
+//     const saved = await AsyncStorage.getItem("USER_INTERESTS");
+//     if (saved) {
+//       setSelectedInterests(JSON.parse(saved));
+//     }
+//   };
+
+//   loadSavedInterests();
+// }, []);
+
+useEffect(() => {
+  const clearOnOpen = async () => {
+    await AsyncStorage.removeItem("USER_INTERESTS");
+    setSelectedInterests([]);
+  };
+  clearOnOpen();
+}, []);
 
   return (
     <>
       {showUploadPhoto ? (
-        <UploadPhotoScreen interests={selectedInterests} onBack={() => setShowUploadPhoto(false)} />
+        <UploadPhotoScreen
+          interests={selectedInterests}
+          onBack={() => setShowUploadPhoto(false)}
+        />
+      
       ) : (
         <>
 
@@ -60,7 +90,7 @@ const YourInterestsIndex = (props) => {
               />
 
               <InterestsList
-selectedInterests={selectedInterests}
+                selectedInterests={selectedInterests}
                 setSelectedInterests={setSelectedInterests}
                 setShowUploadPhoto={setShowUploadPhoto}
 
