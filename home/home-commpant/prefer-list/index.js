@@ -21,7 +21,7 @@ const PreferListIndex = () => {
   // ✅ UNIQUE PREFERENCES
 
   const [selectedPreferences, setSelectedPreferences] = useState([])
-  
+
   const [showInterests, setShowInterests] = useState(false)
 
   useLayoutEffect(() => {
@@ -32,32 +32,28 @@ const PreferListIndex = () => {
     })
   }, [navigation])
 
-    useEffect(() => {
-      const loadPre = async () => {
-        const saved = await AsyncStorage.getItem("USER_PREFERENCES");
-        if (saved) {
-          setSelectedPreferences(JSON.parse(saved));
-        }
-      };
-      loadPre();
-    }, []);
+  useEffect(() => {
+    const loadPre = async () => {
+      const saved = await AsyncStorage.getItem("USER_PREFERENCES");
+      if (saved) {
+        setSelectedPreferences(JSON.parse(saved));
+      }
+    };
+    loadPre();
+  }, []);
 
-    
+  const handleBack = () => {
+    setShowInterests(false); // 👈 RESET
+  };
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.root}>
-       {/* <Text>jjj</Text> */}
-{/* <YourInterestsIndex
-            // Preferences={preferences}
-           
-            onBack={() => setShowInterests(false)}
-          /> */}
         {showInterests ? (
-         <YourInterestsIndex
+          <YourInterestsIndex
             // Preferences={preferences}
-           
-            onBack={() => setShowInterests(false)}
+
+            handleBackInterests={handleBack}
           />
         ) : (
           <View>
@@ -69,7 +65,7 @@ const PreferListIndex = () => {
             <PreferencesWrapper
               // Preferences={preferences}
               // onContinue={(data) => {
-                
+
               //   setShowCongrats(true)
               // }}
               selectedPreferences={selectedPreferences}
@@ -101,6 +97,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent:'center'
+    justifyContent: 'center'
   },
 })

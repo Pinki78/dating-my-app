@@ -11,7 +11,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 
 const YourInterestsIndex = (props) => {
-  const { onBack, PreferencesInput } = props;
+
+  const {  handleBackInterests, PreferencesInput } = props;
   const [showUploadPhoto, setShowUploadPhoto] = useState(false)
   const navigation = useNavigation();
 
@@ -24,59 +25,39 @@ const YourInterestsIndex = (props) => {
   }, [navigation]);
 
 
-const handleBack = async () => {
-  await AsyncStorage.removeItem("USER_INTERESTS");
-  setSelectedInterests([]);
-  onBack();
-};
+  // const handleBack = async () => {
+  //   await AsyncStorage.removeItem("USER_INTERESTS");
+  //   setSelectedInterests([]);
+  //   onBack();
+  // };
 
   const [selectedInterests, setSelectedInterests] = useState([]);
 
-  // Restore saved interests (optional but recommended)
-  // useEffect(() => {
-  //   const loadInterests = async () => {
-  //     const saved = await AsyncStorage.getItem("USER_INTERESTS");
-  //     if (saved) {
-  //       setSelectedInterests(JSON.parse(saved));
-  //     }
-  //   };
-  //   loadInterests();
-  // }, []);
 
-// useEffect(() => {
-//   const loadSavedInterests = async () => {
-//     const saved = await AsyncStorage.getItem("USER_INTERESTS");
-//     if (saved) {
-//       setSelectedInterests(JSON.parse(saved));
-//     }
-//   };
-
-//   loadSavedInterests();
-// }, []);
-
-useEffect(() => {
-  const clearOnOpen = async () => {
-    await AsyncStorage.removeItem("USER_INTERESTS");
-    setSelectedInterests([]);
-  };
-  clearOnOpen();
-}, []);
+  useEffect(() => {
+    const clearOnOpen = async () => {
+      await AsyncStorage.getItem("USER_INTERESTS");
+      setSelectedInterests([]);
+    };
+    clearOnOpen();
+  }, []);
 
   return (
     <>
       {showUploadPhoto ? (
         <UploadPhotoScreen
           interests={selectedInterests}
-          onBack={() => setShowUploadPhoto(false)}
+          setShowUploadPhoto={setShowUploadPhoto}
+          handleBackInterests={handleBackInterests}
         />
-      
+
       ) : (
         <>
 
           <HeaderIocnText
             icon="arrow-back-circle-outline"
 
-            onBack={onBack}
+            onBack={handleBackInterests}
             BackheaderStyle={styles.backheaderStyle}
           />
           <SafeAreaProvider>

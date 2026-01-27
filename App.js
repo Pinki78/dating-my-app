@@ -23,31 +23,34 @@ import {
 
 
 import { useEffect, useState } from "react";
+
 import { View, ActivityIndicator, Pressable } from "react-native";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { Provider } from "react-redux";
-
-import { seedProfilesToFirebase } from "./firebase/auth-bass/seedProfiles"
 import { auth, db } from "./firebase/firebase";
-import { store } from "./react-redux-store/store";
+// import { seedProfilesToFirebase } from "./firebase/auth-bass/seedProfiles"
 
+import { Provider } from "react-redux";
+import { store } from "./react-redux-store/store";
 
 import GetStartedIndex from "./get-started";
 import LogInIndex from "./log-in";
 import CreatingNewUsersIndex from "./creating-new-users";
 import PreferListIndex from "./home/home-commpant/prefer-list";
 import HomeIndex from "./home";
+import LocationIndex from "./location";
+import UploadPhotoScreen from "./upload-your-photo";
 
 const Stack = createNativeStackNavigator();
 
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function App() {
 
+export default function App() {
 
 
   useEffect(() => {
@@ -60,10 +63,9 @@ export default function App() {
   }, []);
 
 
-
-useEffect(() => {
-  seedProfilesToFirebase()
-}, [])
+// useEffect(() => {
+//   seedProfilesToFirebase()
+// }, [])
 
 const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -125,7 +127,12 @@ const [fontsLoaded] = useFonts({
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {user ? (
             hasPreferences === false ? (
+              <>
               <Stack.Screen name="prefer-list" component={PreferListIndex} />
+              <Stack.Screen name="location" component={LocationIndex} />
+              <Stack.Screen name="upload-your-photo" component={UploadPhotoScreen} />
+              
+              </>
             ) : (
               <Stack.Screen name="home" component={HomeIndex} />
             )

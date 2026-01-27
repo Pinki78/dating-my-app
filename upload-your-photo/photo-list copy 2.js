@@ -15,55 +15,43 @@ import COLORS from "../assets/style/color";
 import PressableIconButtonGradient from "../components/button/pressable-gradient-icon-button";
 
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
-import { addPhoto, clearPhotos} from "../react-redux-store/store-comp/photosSlice";
 
-const PhotoList = ({setShowUploadPhoto , handleBackInterests}) => {
 
-  const dispatch = useDispatch();
+
+const PhotoList = () => {
+
   const navigation = useNavigation();
 
   const STORAGE_KEY = "USER_PHOTOS";
   const MAX_PHOTOS = 6;
 
-    // ✅ Redux state 
-  const photos = useSelector(state => state.photosStore.list);
+  const [photos, setPhotos] = useState([]);
 
-  // const [photos, setPhotos] = useState([]);
+  /* 🔹 Load saved photos when screen opens */
+  useEffect(() => {
+    const loadPhotos = async () => {
+      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setPhotos(JSON.parse(saved));
+      }
+    };
+    loadPhotos();
+  }, []);
 
-useEffect(() => {
-  const loadPhotos = async () => {
-    const saved = await AsyncStorage.getItem(STORAGE_KEY);
-
-    dispatch(clearPhotos()); // ✅ RESET first
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      parsed.forEach(uri => dispatch(addPhoto(uri)));
-    }
-  };
-
-  loadPhotos();
-}, []);
-
-
-  /* 🔹 SAVE Redux photos → AsyncStorage */
+  /* 🔹 Save photos whenever they change */
   useEffect(() => {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
   }, [photos]);
 
-  /* 🔹 CLEAR when BACK pressed */
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     return () => {
-  //       dispatch(clearPhotos());
-  //       // AsyncStorage.removeItem(STORAGE_KEY);
-  //        AsyncStorage.getItem(STORAGE_KEY);
-  //         // setShowUploadPhoto(true);
-  //         // handleBackInterests()
-  //     };
-  //   }, [])
-  // );
+  /* 🔹 Clear photos when BACK is pressed */
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setPhotos([]);
+        AsyncStorage.getItem(STORAGE_KEY);
+      };
+    }, [])
+  );
 
   /* 🔹 Pick image */
   const pickImage = async () => {
@@ -84,10 +72,9 @@ useEffect(() => {
     });
 
     if (!result.canceled) {
-      dispatch(addPhoto(result.assets[0].uri));
+      setPhotos(prev => [...prev, result.assets[0].uri]);
     }
   };
-
 
   /* 🔹 Continue button handler */
   const handleContinue = () => {

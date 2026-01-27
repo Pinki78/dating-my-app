@@ -6,8 +6,11 @@ import {
   Image,
 } from "react-native";
 import { useLayoutEffect, useState, useEffect } from 'react'
+
 import { useNavigation } from '@react-navigation/native'
+
 import PhotoList from "./photo-list";
+
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import HeaderIocnText from "../components/cutom-header/header-iocn-text";
 import CommpantText from "../components/logo-text/commpant-text";
@@ -15,16 +18,14 @@ import CommpantText from "../components/logo-text/commpant-text";
 
 const UploadPhotoScreen = (porps) => {
 
-  const { onBack,interests } = porps;
+  const { setShowUploadPhoto, handleBackInterests } = porps;
   const navigation = useNavigation();
 
   const [resetKey, setResetKey] = useState(0);
 
   const handleBack = () => {
-    setResetKey(prev => prev + 1); // 🔥 force remount
-    onBack();
+    setShowUploadPhoto(false); // 👈 RESET
   };
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTransparent: true,
@@ -36,21 +37,27 @@ const UploadPhotoScreen = (porps) => {
 
   return (
     <>
-      <HeaderIocnText
-        icon="arrow-back-circle-outline"
-        onBack={handleBack}
-        BackheaderStyle={styles.backheaderStyle}
 
-      />
       <SafeAreaProvider>
 
         <SafeAreaView style={[styles.container,]}>
+          <HeaderIocnText
+            icon="arrow-back-circle-outline"
+            onBack={handleBack}
+            BackheaderStyle={styles.backheaderStyle}
+
+          />
           <CommpantText
             HeaderIingText="Upload your photo"
             SummaryText=" We'd love to see you. Upload a photo for your dating journey."
           />
 
-          <PhotoList resetOnBack   key={resetKey} />
+          <PhotoList
+            //  resetOnBack  
+            setShowUploadPhoto={setShowUploadPhoto}
+            handleBackInterests={handleBackInterests}
+          //  key={resetKey}
+          />
         </SafeAreaView>
 
       </SafeAreaProvider>
