@@ -1,153 +1,162 @@
-import { StyleSheet, Text, View, TextInput, Pressable, Platform, Alert } from 'react-native';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from "@expo/vector-icons";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Pressable,
+  Alert,
+} from "react-native";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import PressableIconButtonGradient from '../../components/button/pressable-gradient-icon-button';
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch , useSelector } from "react-redux";
+
+import COLORS from "../../assets/style/color";
+import PressableIconButtonGradient from "../../components/button/pressable-gradient-icon-button";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/firebase";
-import COLORS from '../../assets/style/color';
+import { auth, db } from "../../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
+import { setLoading } from "../../react-redux-store/store-comp/authSlice";
+
 const LoginFrom = () => {
-    const navigation = useNavigation();
-    const [showPassword, setShowPassword] = useState(false);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-    const { control, handleSubmit, formState: { errors } } = useForm({
-        defaultValues: { identity: "", password: "", remember: false },
-        mode: "onSubmit",
-    });
+  const [showPassword, setShowPassword] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { loading } = useSelector(
+    (state) => state.authStore
+  );
 
-    const onSubmit = async ({ identity, password }) => {
-        try {
-            await signInWithEmailAndPassword(auth, identity, password);
-            // 🔹 No navigation here — App.js handles it
-        } catch (error) {
-            let msg = "Login failed";
-            if (error.code === "auth/user-not-found") msg = "No account found";
-            else if (error.code === "auth/wrong-password") msg = "Incorrect password";
-            else if (error.code === "auth/invalid-email") msg = "Invalid email";
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: { identity: "", password: "" },
+    mode: "onSubmit",
+  });
 
-            Alert.alert("Login Error", msg);
-        }
-    };
+const onSubmit = async ({ identity, password }) => {
+  try {
+    dispatch(setLoading(true));
 
-    return (
-        <>
-            <View>
-                <Controller
-                    control={control}
-                    name="identity"
-                    rules={{ required: "Required" }}
-                    render={({ field: { onChange, value } }) => (
-                        <TextInput style={styles.input} placeholder="Email"
-                         placeholderTextColor={COLORS.greyishy}
-                          value={value} onChangeText={onChange} />
-                    )}
-                />
-                {errors.identity && <Text style={styles.error}>{errors.identity.message}</Text>}
-
-                <Controller
-                    control={control}
-                    name="password"
-                    rules={{ required: "Password required" }}
-                    render={({ field: { onChange, value } }) => (
-                        <View style={styles.passwordWrapper}>
-                            <TextInput
-                                style={[styles.input, styles.passwordInput, { flex: 1, borderWidth: 0 }]}
-                                placeholder="Password"
-                                placeholderTextColor={COLORS.greyishy}
-                                secureTextEntry={!showPassword}
-                                value={value}
-                                onChangeText={onChange}
-                            />
-                            <Pressable onPress={() => setShowPassword(!showPassword)} style={{marginRight:12}}>
-                                <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#999" />
-                            </Pressable>
-                        </View>
-                    )}
-                />
-                <View>
-                    {errors.password && <Text style={[styles.error , {color: COLORS.red,}]}>{errors.password.message}</Text>}
-                </View>
-
-                <PressableIconButtonGradient ButtonTitle="Log In" onPress={handleSubmit(onSubmit)} />
-            </View>
-
-            <Pressable onPress={() => navigation.navigate('forgot-password')}>
-                <Text style={styles.resetHereText}>Forgot password?</Text>
-            </Pressable>
-        </>
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      identity.trim(),
+      password
     );
+
+    const user = userCredential.user;
+    const docId = `${user.email}_${user.uid}`;
+
+    // 🔹 Get usersList data (optional, if you need it)
+    const userRef = doc(db, "usersList", docId);
+    const userSnap = await getDoc(userRef);
+    const userData = userSnap.data();
+
+    // 🔹 Get the onboarding/profile data
+    const profileRef = doc(db, "users", docId, "profileData", "profile");
+    const profileSnap = await getDoc(profileRef);
+    const profileData = profileSnap.data();
+
+    // 🔹 Check onboarding status safely
+    const hasPreferences = Array.isArray(profileData?.preferences) && profileData.preferences.length > 0;
+    const onboardingComplete = profileData?.onboardingComplete;
+
+    if (!onboardingComplete ) {
+      navigation.replace("prefer-list");
+    } else {
+      navigation.replace("home");
+    }
+  } catch (error) {
+    console.log("Error Code:", error.code);
+    console.log("Error Message:", error.message);
+
+    if (error.code === "auth/invalid-credential") {
+      Alert.alert("Login Failed", "Invalid email or password.");
+    } else {
+      Alert.alert("Login Error", error.message);
+    }
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
+
+
+
+
+  return (
+    <View>
+      <Controller
+        control={control}
+        name="identity"
+        rules={{ required: "Required" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor={COLORS.greyishy}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
+      />
+      {errors.identity && <Text style={styles.error}>{errors.identity.message}</Text>}
+
+      <Controller
+        control={control}
+        name="password"
+        rules={{ required: "Password required" }}
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.passwordWrapper}>
+            <TextInput
+              style={[styles.input, { flex: 1, borderWidth: 0 }]}
+              placeholder="Password"
+              placeholderTextColor={COLORS.greyishy}
+              secureTextEntry={!showPassword}
+              value={value}
+              onChangeText={onChange}
+            />
+            <Pressable onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 12 }}>
+              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#999" />
+            </Pressable>
+          </View>
+        )}
+      />
+      {errors.password && <Text style={[styles.error, { color: COLORS.red }]}>{errors.password.message}</Text>}
+
+      <PressableIconButtonGradient ButtonTitle={loading ? "Please wait..." : "Log In"} onPress={handleSubmit(onSubmit)} />
+    </View>
+  );
 };
 
 export default LoginFrom;
 
 const styles = StyleSheet.create({
-
-    input: {
-        borderWidth: 1,
-        borderColor: COLORS.greyCcc,
-        borderRadius: 6,
-        padding: 12,
-        marginBottom: 10,
-        fontFamily: 'Urbanist_600SemiBold',
-    },
-    passwordInput: {
-        marginBottom: 0,
-    },
-    passwordWrapper: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: COLORS.greyCcc,
-        borderRadius: 6,
-        marginBottom: 20,
-    },
-
-    error: {
-        color: COLORS.red,
-        marginBottom: 8,
-        fontSize: 12,
-        //   backgroundColor: "yellow", // TEMP — to see it
-        paddingVertical: 2,
-         fontFamily: 'Urbanist_600SemiBold',
-    },
-    rememberWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    rememberText: {
-        marginLeft: 8,
-        fontFamily: "Mulish_600SemiBold",
-        color: COLORS.grey595959,
-        fontSize: 14,
-    },
-    forgetPasswordWrapper: {
-        textAlign: 'center',
-        justifyContent: 'center',
-        // display: 'block',
-    },
-    Text2: {
-        fontFamily: 'Mulish_500Medium',
-        color: COLORS.grey747474,
-        fontSize: 14,
-        textAlign: 'center',
-        // backgroundColor: 'yellow'
-    },
-    resetHereBtn: {
-        paddingVertical: 4,
-    },
-
-    resetHereText: {   // 👈 MOVE HERE
-        color:COLORS.blue2A3E93,
-        fontSize: 12,
-        fontFamily: 'none',
-        fontFamily: "Mulish_600SemiBold",
-        textAlign: 'center',
-    },
-    pressed: {
-        opacity: 0.4, // 👈 this is your "Opacity 8"
-        
-    }
-})
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.greyCcc,
+    borderRadius: 6,
+    padding: 12,
+    marginBottom: 10,
+    fontFamily: "Urbanist_600SemiBold",
+  },
+  passwordWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.greyCcc,
+    borderRadius: 6,
+    marginBottom: 20,
+  },
+  error: {
+    color: COLORS.red,
+    marginBottom: 8,
+    fontSize: 12,
+    fontFamily: "Urbanist_600SemiBold",
+  },
+});

@@ -1,148 +1,153 @@
 import {
   View,
-  Text,
   StyleSheet,
   Pressable,
   Image,
+  Alert,
 } from "react-native";
-import React, { useState, useCallback, useEffect } from "react";
+import  { useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 
 import COLORS from "../assets/style/color";
 import PressableIconButtonGradient from "../components/button/pressable-gradient-icon-button";
 
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { addPhoto, clearPhotos} from "../react-redux-store/store-comp/photosSlice";
+import {
+  addPhoto,
+  clearPhotos,
+  removePhoto,
+  pickImageThunk ,
+  // handleContinue
+} from "../react-redux-store/store-comp/photosSlice";
 
-const PhotoList = ({setShowUploadPhoto , handleBackInterests}) => {
 
-  const dispatch = useDispatch();
+// const MAX_PHOTOS = 6;
+const GAP = 12;
+
+const PhotoList = () => {
+  
   const navigation = useNavigation();
-
-  const STORAGE_KEY = "USER_PHOTOS";
-  const MAX_PHOTOS = 6;
-
-    // ✅ Redux state 
-  const photos = useSelector(state => state.photosStore.list);
-
-  // const [photos, setPhotos] = useState([]);
-
-useEffect(() => {
-  const loadPhotos = async () => {
-    const saved = await AsyncStorage.getItem(STORAGE_KEY);
-
-    dispatch(clearPhotos()); // ✅ RESET first
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      parsed.forEach(uri => dispatch(addPhoto(uri)));
-    }
-  };
-
-  loadPhotos();
-}, []);
+  const dispatch = useDispatch();
 
 
-  /* 🔹 SAVE Redux photos → AsyncStorage */
-  useEffect(() => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
-  }, [photos]);
+  const {photoListSelector} = useSelector((state) => state.photosStore);
 
-  /* 🔹 CLEAR when BACK pressed */
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     return () => {
-  //       dispatch(clearPhotos());
-  //       // AsyncStorage.removeItem(STORAGE_KEY);
-  //        AsyncStorage.getItem(STORAGE_KEY);
-  //         // setShowUploadPhoto(true);
-  //         // handleBackInterests()
-  //     };
-  //   }, [])
-  // );
+ 
+  /* ---------------- CONTINUE ---------------- */
 
-  /* 🔹 Pick image */
-  const pickImage = async () => {
-    if (photos.length >= MAX_PHOTOS) return;
-
-    const permission =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permission.granted) {
-      alert("Permission required!");
+const handleContinue = async () => {
+   try {
+    if (!photoListSelector.some(Boolean)) {
+      Alert.alert("Upload at least one photo");
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.8,
-    });
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
 
-    if (!result.canceled) {
-      dispatch(addPhoto(result.assets[0].uri));
-    }
-  };
+    const STORAGE_KEY = `USER_PHOTOS_${userId}`;
+
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(photoListSelector)
+    );
+console.log("navigation:", navigation);
+   navigation.replace("location");
+  } catch (error) {
+    console.log("Save error:", error);
+  }
+};
 
 
-  /* 🔹 Continue button handler */
-  const handleContinue = () => {
-      navigation.navigate("location");
-    console.log("Final photos:", photos);
-    // navigate / upload / next step
-  };
+  
+  /* ---------------- PHOTO BOX COMPONENT ---------------- */
+
+  const PhotoBox = ({ index, style, iconSize }) => (
+    <Pressable
+      style={style}
+      onPress={() =>dispatch(pickImageThunk(index)) }
+    >
+      {photoListSelector[index] ? (
+        <>
+          <Image
+            source={{ uri: photoListSelector[index] }}
+            style={styles.image}
+          />
+
+          {/* DELETE BUTTON */}
+          <Pressable
+            style={styles.deleteBtn}
+           onPress={(e) => {
+          e.stopPropagation();
+          dispatch(removePhoto(index));
+        }}
+            
+          >
+            <Ionicons name="close" size={18} color="#fff" />
+          </Pressable>
+        </>
+      ) : (
+        <Ionicons
+          name="add"
+          size={iconSize}
+          color={COLORS.pinkiDark}
+        />
+      )}
+    </Pressable>
+  );
 
   return (
-    <View>
+    <>
+      <View>
+        {/* GRID */}
+        <View style={styles.wrapper}>
+          <View style={styles.topRow}>
+            <PhotoBox
+              index={0}
+              style={styles.bigBox}
+              iconSize={34}
+            />
 
-      {/* PHOTO GRID */}
-      <View style={styles.wrapper}>
+            <View style={styles.rightCol}>
+              <PhotoBox
+                index={1}
+                style={styles.rightBox}
+                iconSize={26}
+              />
+              <PhotoBox
+                index={2}
+                style={styles.rightBox}
+                iconSize={26}
+              />
+            </View>
+          </View>
 
-        {/* TOP ROW */}
-        <View style={styles.topRow}>
-          {/* BIG LEFT */}
-          <Pressable style={styles.bigBox} onPress={pickImage}>
-            {photos[0] ? (
-              <Image source={{ uri: photos[0] }} style={styles.image} />
-            ) : (
-              <Ionicons name="add" size={34} color={COLORS.pinkiDark} />
-            )}
-          </Pressable>
-
-          {/* RIGHT COLUMN */}
-          <View style={styles.rightCol}>
-            {[1, 2].map(i => (
-              <Pressable key={i} style={styles.rightBox} onPress={pickImage}>
-                {photos[i] ? (
-                  <Image source={{ uri: photos[i] }} style={styles.image} />
-                ) : (
-                  <Ionicons name="add" size={26} color={COLORS.pinkiDark} />
-                )}
-              </Pressable>
-            ))}
+          <View style={styles.bottomRow}>
+            <PhotoBox
+              index={3}
+              style={styles.bottomBox}
+              iconSize={26}
+            />
+            <PhotoBox
+              index={4}
+              style={styles.bottomBox}
+              iconSize={26}
+            />
+            <PhotoBox
+              index={5}
+              style={styles.bottomBox}
+              iconSize={26}
+            />
           </View>
         </View>
 
-        {/* BOTTOM ROW */}
-        <View style={styles.bottomRow}>
-          {[3, 4, 5].map(i => (
-            <Pressable key={i} style={styles.bottomBox} onPress={pickImage}>
-              {photos[i] ? (
-                <Image source={{ uri: photos[i] }} style={styles.image} />
-              ) : (
-                <Ionicons name="add" size={26} color={COLORS.pinkiDark} />
-              )}
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
-      {/* CONTINUE BUTTON */}
-      <PressableIconButtonGradient
+        {/* CONTINUE */}
+        {/* <PressableIconButtonGradient
         ButtonTitle="Continue"
         onPress={handleContinue}
         disabled={!photos[0]}
@@ -150,14 +155,26 @@ useEffect(() => {
           { marginTop: 20 },
           !photos[0] && { opacity: 0.5 },
         ]}
-      />
-    </View>
+      /> */}
+
+        <PressableIconButtonGradient
+  ButtonTitle="Continue"
+  onPress={handleContinue}
+  disabled={!photoListSelector.some(Boolean)}
+  PressableClass={[
+    { marginTop: 20 },
+    !photoListSelector.some(Boolean) && { opacity: 0.5 },
+  ]}
+/>
+      </View>
+
+    </>
   );
 };
 
 export default PhotoList;
 
-const GAP = 12;
+/* ---------------- STYLES ---------------- */
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -219,5 +236,14 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+
+  deleteBtn: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    borderRadius: 20,
+    padding: 4,
   },
 });

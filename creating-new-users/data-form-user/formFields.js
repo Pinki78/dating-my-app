@@ -27,12 +27,14 @@ export const formFields = [
     label: 'Phone Number',
     placeholder: 'Phone Number',
     type: 'phone',
+     maxLength: 10,
   },
   {
     id: 'dob',
     label: 'DOB',
     placeholder: 'DD/MM/YYYY',
     type: 'date',
+     maxLength: 10,
   },
   {
     id: 'password',

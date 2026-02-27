@@ -5,24 +5,26 @@ import { useNavigation } from '@react-navigation/native'
 // import { useSelector } from 'react-redux'
 
 import PreferencesWrapper from './looking-for-comp/preferences-wrapper'
-import CommpantText from '../../../components/logo-text/commpant-text'
+import CommpantText from '../components/logo-text/commpant-text'
 // import CongratulationsIndex from '../../../components/congratulations/congratulations-index'
-import YourInterestsIndex from '../your-interests/your-interests-index'
+import YourInterestsIndex from '../your-interests'
 import {
 
   Text,
 
 } from 'react-native'
+// import { setShowInterests, setSelectedPreferences } from '../react-redux-store/store-comp/uploadProfiles'
+import { useSelector, useDispatch } from "react-redux";
+import { setShowInterests, setSelectedPreferences } from '../react-redux-store/store-comp/preferencesSlice'
+
+
 const PreferListIndex = () => {
   const navigation = useNavigation()
+   const dispatch = useDispatch();
 
-
-
-  // ✅ UNIQUE PREFERENCES
-
-  const [selectedPreferences, setSelectedPreferences] = useState([])
-
-  const [showInterests, setShowInterests] = useState(false)
+  const { showInterests ,} = useSelector(
+    (state) => state.preferencesStore
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,7 +45,8 @@ const PreferListIndex = () => {
   }, []);
 
   const handleBack = () => {
-    setShowInterests(false); // 👈 RESET
+    dispatch(setShowInterests(false)); // 👈 RESET
+      
   };
 
   return (
@@ -52,7 +55,6 @@ const PreferListIndex = () => {
         {showInterests ? (
           <YourInterestsIndex
             // Preferences={preferences}
-
             handleBackInterests={handleBack}
           />
         ) : (
@@ -63,15 +65,10 @@ const PreferListIndex = () => {
             />
 
             <PreferencesWrapper
-              // Preferences={preferences}
-              // onContinue={(data) => {
-
-              //   setShowCongrats(true)
-              // }}
-              selectedPreferences={selectedPreferences}
-              setSelectedPreferences={setSelectedPreferences}
-              setShowInterests={setShowInterests}
-              showInterests={showInterests}
+              //     selectedPreferences={selectedPreferences}
+              // setSelectedPreferences={setSelectedPreferences}
+              // setShowInterests={setShowInterests}
+              //  showInterests={showInterests}
             />
           </View>
         )}

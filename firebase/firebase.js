@@ -7,6 +7,7 @@ import {
 import { getFirestore } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/* ---------- Config ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyBnmYtJRotzc7FYtwag0q-Iigpb5nYU2OE",
   authDomain: "my-dating-app-project-2.firebaseapp.com",
@@ -17,23 +18,24 @@ const firebaseConfig = {
 };
 
 /* ---------- App ---------- */
-const app = getApps().length === 0
-  ? initializeApp(firebaseConfig)
-  : getApp();
+const app =
+  getApps().length === 0
+    ? initializeApp(firebaseConfig)
+    : getApp();
 
-/* ---------- Auth (SAFE INIT) ---------- */
+/* ---------- Auth SAFE INIT ---------- */
 let auth;
 
 try {
-  auth = getAuth(app);
-} catch (e) {
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
   });
+} catch (error) {
+  // ✅ Already initialized → just get it
+  auth = getAuth(app);
 }
 
 /* ---------- Firestore ---------- */
 const db = getFirestore(app);
 
-export { app, auth, db };
-export default app;
+export { auth, db };

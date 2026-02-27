@@ -7,13 +7,14 @@ import {
 } from 'react-native'
 import React, { useState,   useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import COLORS from '../../../../assets/style/color'
-import PressableIconButtonGradient from '../../../../components/button/pressable-gradient-icon-button'
+import COLORS from '../../assets/style/color'
+import PressableIconButtonGradient from '../../components/button/pressable-gradient-icon-button'
 
-import CongratulationsIndex from '../../../../components/congratulations/congratulations-index'
+import CongratulationsIndex from '../../components/congratulations/congratulations-index'
 import { useDispatch, useSelector } from 'react-redux'
-import { loadProfiles } from '../../../../react-redux-store/store-comp/uploadProfiles'
+import { loadProfiles,uploadProfilesFirebase } from '../../react-redux-store/store-comp/uploadProfiles'
 
+import { getAuth } from "firebase/auth";
 
 const PreferencesList = (props) => {
   const { setShowInterests, selectedPreferences, setSelectedPreferences } = props
@@ -27,9 +28,15 @@ const PreferencesList = (props) => {
   const [showCongrats, setShowCongrats] = useState(false)
 
   // 🔥 LOAD FIREBASE DATA
-  useEffect(() => {
-    dispatch(loadProfiles())
-  }, [])
+  // useEffect(() => {
+  //   dispatch(loadProfiles())
+  // }, [])
+
+    useEffect(() => {
+    dispatch(uploadProfilesFirebase()).then(() => {
+      dispatch(loadProfiles());
+    });
+  }, [dispatch]);
 
   // 🔥 SAFE preferences extraction (STRING OR ARRAY)
   const preferences = [
@@ -53,17 +60,42 @@ const PreferencesList = (props) => {
         : [...prev, value]
     )
   }
+  
+  // const savePreferences = async () => {
+  //   if (!selectedPreferences.length) return
 
-  const savePreferences = async () => {
-    if (!selectedPreferences.length) return
+  //   await AsyncStorage.setItem(
+  //     'USER_PREFERENCES',
+  //     JSON.stringify(selectedPreferences)
+  //   )
+
+  //   setShowCongrats(true)
+  // }
+  
+const savePreferences = async () => {
+  try {
+    if (!selectedPreferences.length) return;
+
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) return;
+
+    const STORAGE_KEY = `USER_PREFERENCES_${userId}`;
 
     await AsyncStorage.setItem(
-      'USER_PREFERENCES',
+      STORAGE_KEY,
       JSON.stringify(selectedPreferences)
-    )
+    );
 
-    setShowCongrats(true)
+    setShowCongrats(true);
+  } catch (error) {
+    console.log("Save error:", error);
   }
+};
+
+
+
 
   const renderItem = ({ item }) => {
     const isSelected = selectedPreferences.includes(item)

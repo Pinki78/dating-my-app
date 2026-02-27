@@ -2,17 +2,18 @@ import { StyleSheet, } from "react-native";
 import { SafeAreaView, SafeAreaProvider, } from 'react-native-safe-area-context'
 import { useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigation } from "@react-navigation/native";
-import HeaderIocnText from "../../../components/cutom-header/header-iocn-text";
-import CommpantText from "../../../components/logo-text/commpant-text";
+import HeaderIocnText from "../components/cutom-header/header-iocn-text";
+import CommpantText from "../components/logo-text/commpant-text";
 import InterestsList from "./interests-list";
-import UploadPhotoScreen from "../../../upload-your-photo";
+import UploadPhotoScreen from "../upload-your-photo";
 
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 
 const YourInterestsIndex = (props) => {
 
-  const {  handleBackInterests, PreferencesInput } = props;
+  const {  handleBackInterests,  } = props;
+
   const [showUploadPhoto, setShowUploadPhoto] = useState(false)
   const navigation = useNavigation();
 
@@ -33,7 +34,7 @@ const YourInterestsIndex = (props) => {
 
   const [selectedInterests, setSelectedInterests] = useState([]);
 
-
+  
   useEffect(() => {
     const clearOnOpen = async () => {
       await AsyncStorage.getItem("USER_INTERESTS");

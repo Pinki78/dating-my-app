@@ -15,17 +15,28 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import HeaderIocnText from "../components/cutom-header/header-iocn-text";
 import CommpantText from "../components/logo-text/commpant-text";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setShowUploadPhoto } from "../react-redux-store/store-comp/interestsSlice";
 
 const UploadPhotoScreen = (porps) => {
 
-  const { setShowUploadPhoto, handleBackInterests } = porps;
+  const { handleBackInterests, } = porps;
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  const [resetKey, setResetKey] = useState(0);
+  // const [resetKey, setResetKey] = useState(0);
 
-  const handleBack = () => {
-    setShowUploadPhoto(false); // 👈 RESET
-  };
+  // const handleBack = () => {
+  //   console.log("Back pressed");
+  //   dispatch(setShowUploadPhoto(false));
+  //   if (handleBackInterests) handleBackInterests();
+  // };
+
+  // const handleBack = () => {
+  //   setShowUploadPhoto(false);         // hide UploadPhotoScreen
+  //  alert("nnnnv")
+  // };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTransparent: true,
@@ -37,27 +48,22 @@ const UploadPhotoScreen = (porps) => {
 
   return (
     <>
-
+      
       <SafeAreaProvider>
 
         <SafeAreaView style={[styles.container,]}>
-          <HeaderIocnText
-            icon="arrow-back-circle-outline"
-            onBack={handleBack}
-            BackheaderStyle={styles.backheaderStyle}
+<HeaderIocnText
+        icon="arrow-back-circle-outline"
+        onBack={handleBackInterests}
+        BackheaderStyle={styles.backheaderStyle}
 
-          />
+      />
           <CommpantText
             HeaderIingText="Upload your photo"
             SummaryText=" We'd love to see you. Upload a photo for your dating journey."
           />
 
-          <PhotoList
-            //  resetOnBack  
-            setShowUploadPhoto={setShowUploadPhoto}
-            handleBackInterests={handleBackInterests}
-          //  key={resetKey}
-          />
+          <PhotoList/>
         </SafeAreaView>
 
       </SafeAreaProvider>
@@ -67,11 +73,11 @@ const UploadPhotoScreen = (porps) => {
 
 export default UploadPhotoScreen;
 const styles = StyleSheet.create({
-  // container: {
-  //   justifyContent: "flex-start",
-  //   // alignItems: "center",
-  //   flexShrink: 1,
-  // },
+  container: {
+    justifyContent: "flex-start",
+    // alignItems: "center",
+    flexShrink: 1,
+  },
 
   backheaderStyle: {
     paddingRight: 0,

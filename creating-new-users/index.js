@@ -43,7 +43,7 @@ const CreatingNewUsersIndex = () => {
   return (
     <SafeAreaProvider>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={[styles.container, { paddingTop: insets.top + 15 }]}>
+        <SafeAreaView  style={[styles.container, { paddingTop: insets.top + 15 }]}>
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsHorizontalScrollIndicator={false}
