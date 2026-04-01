@@ -14,16 +14,19 @@ import { useDispatch , useSelector } from "react-redux";
 
 import COLORS from "../../assets/style/color";
 import PressableIconButtonGradient from "../../components/button/pressable-gradient-icon-button";
+
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 import { setLoading } from "../../react-redux-store/store-comp/authSlice";
+import { setIsAuthenticated } from "../../react-redux-store/store-comp/goHomesliceHandler";
+
 
 const LoginFrom = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
+  
   const [showPassword, setShowPassword] = useState(false);
   // const [loading, setLoading] = useState(false);
   const { loading } = useSelector(
@@ -63,13 +66,14 @@ const onSubmit = async ({ identity, password }) => {
     const profileData = profileSnap.data();
 
     // 🔹 Check onboarding status safely
-    const hasPreferences = Array.isArray(profileData?.preferences) && profileData.preferences.length > 0;
+
     const onboardingComplete = profileData?.onboardingComplete;
 
     if (!onboardingComplete ) {
       navigation.replace("prefer-list");
     } else {
-      navigation.replace("home");
+      // navigation.replace("home");
+       dispatch(setIsAuthenticated(true));
     }
   } catch (error) {
     console.log("Error Code:", error.code);

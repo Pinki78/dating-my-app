@@ -6,6 +6,8 @@ import SocialMeadia from './social-meadia'
 
 const LetsYouIn = () => {
 
+    log
+
     const navigation = useNavigation();
 
     return (

@@ -77,7 +77,7 @@ const YourInterestsIndex = (props) => {
                 HeaderIingText="Your interests"
                 SummaryText="Tell us what piques your curiosity and passions"
               />
-
+              
               <InterestsList
                 // selectedInterests={selectedInterests}
                 // setSelectedInterests={setSelectedInterests}

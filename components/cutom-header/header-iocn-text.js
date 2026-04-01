@@ -13,7 +13,7 @@ const HeaderIocnText = (props) => {
     onSkip,
     skipTitle = "Skip",  // ✅ default text
   } = props
-
+  
   const navigation = useNavigation()
 
   useLayoutEffect(() => {

@@ -4,14 +4,14 @@ import ContinueWith from '../../components/continue-with/continue-with'
 const NewUesrsModul = () => {
     return (
         <>
-          
-                <NewUesrsFrom />
-                <ContinueWith
-                    textUsesrNameLink="Log In" headerText="Or Continue With"
-                    handlePressurl="log-in"
-                    usesrUp2={{ marginTop: 20 }}
-                />
-            
+
+            <NewUesrsFrom />
+            <ContinueWith
+                textUsesrNameLink="Log In" headerText="Or Continue With"
+                handlePressurl="log-in"
+                usesrUp2={{ marginTop: 20 }}
+            />
+
         </>
     )
 }

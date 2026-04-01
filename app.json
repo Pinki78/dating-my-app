@@ -14,7 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      // "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,15 +23,22 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./android/app/google-services.json",
       "package": "com.alankita.DatingApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      // "@react-native-google-signin/google-signin",
       "expo-font",
       "expo-web-browser",
-      "@react-native-community/datetimepicker"
-    ]
+      // "@react-native-community/datetimepicker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6b7cb712-b93f-4da4-9b94-03ca61054ed4"
+      }
+    }
   }
 }

@@ -48,6 +48,9 @@ const Stack = createNativeStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavigationContainerStack from "./components/navigation-container/navigation-container";
 
+
+
+
 export default function App() {
 
 
@@ -124,7 +127,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainerStack />
-  
+      
     </Provider>
   );
 }

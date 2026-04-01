@@ -1,6 +1,4 @@
-
 import { useFonts } from "expo-font";
-import { Ionicons } from '@expo/vector-icons';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -22,34 +20,43 @@ import {
   Mulish_700Bold,
 } from "@expo-google-fonts/mulish";
 
+import { useEffect, useState, useRef } from "react";
+import { View, ActivityIndicator, Text } from "react-native";
 
-import { useEffect, useState } from "react";
 
-import { View, ActivityIndicator, Pressable } from "react-native";
-
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigationState,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
 
-import GetStartedIndex from "../../get-started";
-import LogInIndex from "../../log-in";
-import CreatingNewUsersIndex from "../../creating-new-users";
-import PreferListIndex from "../../prefer-list";
-import YourInterestsIndex from "../../your-interests";
-import HomeIndex from "../../home";
-import LocationIndex from "../../location";
-import UploadPhotoScreen from "../../upload-your-photo";
+// import GetStartedIndex from "../../get-started";
+// import LogInIndex from "../../log-in";
+// import CreatingNewUsersIndex from "../../creating-new-users";
+// import PreferListIndex from "../../prefer-list";
+// import YourInterestsIndex from "../../your-interests";
+
+// import LocationIndex from "../../location";
+// import UploadPhotoScreen from "../../upload-your-photo";
+
+// import Footer from "../footer/footer";
+// import AboutIndex from "../../about";
+// import Header from "../header/header";
+// import HomeIndex from "../../home";
+
+import AppNavigator from "./app-navigator";
+import AuthStackApp from "./auth-stack-app";
+import { setIsAuthenticated } from "../../react-redux-store/store-comp/goHomesliceHandler";
+
+import { useDispatch , useSelector } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
-
 const NavigationContainerStack = () => {
-
-
-
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -65,53 +72,55 @@ const NavigationContainerStack = () => {
     Mulish_700Bold,
   });
 
+ const dispatch = useDispatch();
 
+ 
+  // const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const { isAuthenticated, loading } = useSelector(
+    (state) => state.goHomesliceHandlerStore
+  );
+ useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      dispatch(setIsAuthenticated(false));
+      return;
+    }
+    
+    const docId = `${user.email}_${user.uid}`;
+    const userRef = doc(db, "usersList", docId);
+    const userSnap = await getDoc(userRef);
 
+    if (!userSnap.exists()) {
+      dispatch(setIsAuthenticated(false));
+      return;
+    }
 
+    const userData = userSnap.data();
+    const photos = userData?.photos || [];
+    const hasPhotos = photos.some((p) => p);
 
+    dispatch(setIsAuthenticated(hasPhotos));
+  });
 
-      if (!fontsLoaded  ) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  return unsubscribe;
+}, [dispatch]);
+
+if (!fontsLoaded || isAuthenticated === null) {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
 
 
 
   return (
-    <>
-      <NavigationContainer >
-      <Stack.Navigator >
+  <NavigationContainer>
+    {isAuthenticated ? <AppNavigator /> : <AuthStackApp />}
+  </NavigationContainer>
+);
 
-      
-        <Stack.Screen name="GetStartedIndex" 
-        component={GetStartedIndex} options={{ headerShown: false }}/>
+};
 
-        {/* AUTH */}
-        <Stack.Screen name="log-in" component={LogInIndex}  options={{ headerShown: false }}/>
-        <Stack.Screen
-          name="creating-new-users"
-          component={CreatingNewUsersIndex}
-          options={{ headerShown: false }}
-        />
-
-        {/* ONBOARDING */}
-        <Stack.Screen name="prefer-list" component={PreferListIndex} options={{ headerShown: false }}/>
-        <Stack.Screen name="your-interests" component={YourInterestsIndex} options={{ headerShown: false }}/>
-        <Stack.Screen name="upload-your-photo" component={UploadPhotoScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="location" component={LocationIndex} options={{ headerShown: false }}/>
-
-        {/* APP */}
-        <Stack.Screen name="home" component={HomeIndex}  options={{ headerShown: false }}/>
-
-      </Stack.Navigator>
-    </NavigationContainer>
-    </>
-  )
-}
-
-export default NavigationContainerStack
-
-// const styles = StyleSheet.create({})
+export default NavigationContainerStack;

@@ -1,12 +1,11 @@
-import { StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native'
+import { StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView, Text } from 'react-native'
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'
-import LogoText from '../components/logo-text/logo-and-text'
-import ModuleLogIn from './login-compo/log-in-module'
 import { useLayoutEffect, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-const LogInIndex = () => {
+const HomeIndex = () => {
 
+  
   const insets = useSafeAreaInsets();
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
@@ -34,8 +33,10 @@ const LogInIndex = () => {
     };
   }, []);
 
+
   return (
     <>
+
       <SafeAreaProvider>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <SafeAreaView style={[styles.container, { paddingTop: insets.top + 15 }]}
@@ -49,39 +50,31 @@ const LogInIndex = () => {
                 paddingBottom: keyboardHeight + 20,
               }}
             >
-              <LogoText
-                LogoHeader="Welcome Back"
-                Summary='Login to continue'
-                headerStyle={{
-                  fontFamily: 'Urbanist_600SemiBold',
-                  fontSize: 25,
-                }}
-                summaryStyle={{
-                  fontSize: 14,
-                  fontFamily: 'Urbanist_600SemiBold',
-                }}
-              />
-
-              <ModuleLogIn />
+             
+    <Text>pinki</Text>
+           
 
             </ScrollView>
           </SafeAreaView>
         </TouchableWithoutFeedback>
       </SafeAreaProvider>
+
+ 
+
     </>
   )
 }
 
+export default HomeIndex
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
     backgroundColor: "#fdecef",
-    justifyContent: 'center',
+    paddingHorizontal: 24,
+
   },
 
 
 
 });
-
-export default LogInIndex

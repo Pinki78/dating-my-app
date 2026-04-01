@@ -22,7 +22,10 @@ import { useNavigation } from "@react-navigation/native";
 // import {setShowBnt} from "../../react-redux-store/store-comp/locationSlice";
 import { useSelector, useDispatch } from "react-redux";
 import IconBtn from "../components/button/icon-btn";
-import { goHomeHandler } from "../react-redux-store/store-comp/goHomesliceHandler";
+import { goHomeHandler,  setIsAuthenticated , } from "../react-redux-store/store-comp/goHomesliceHandler";
+
+
+
 
 const LocationIndex = () => {
 
@@ -86,39 +89,36 @@ const interests = useSelector(
 
 const handleGoHome = async () => {
   try {
-    console.log("📦 DATA:", {
-      photos,
-      region,
-      address,
-      preferences,
-      interests,
-    });
+    // ✅ Ensure at least 1 real photo exists
+    const hasPhotos =
+      Array.isArray(photos) &&
+      photos.some((photo) => photo && photo.trim?.() !== "");
+
+    if (!hasPhotos) {
+      Alert.alert("Please upload at least 1 photo");
+      return;
+    }
 
     const result = await dispatch(
       goHomeHandler({
         photos,
         region,
         address,
-        preferences,
-        interests,
       })
-    ).unwrap();   // ✅ store result
+    ).unwrap();
 
-    console.log("🚀 THUNK DEFINITELY RUNNING");
-    console.log("Result:", result);   // { success: true }
-    console.log("Preferences:", preferences);
-    console.log("Interests:", interests);
-
-const hasPhotos = photos?.some(photo => photo !== null);
-
-if (hasPhotos) {
-  navigation.replace("home");
-}
+    if (result?.success) {
+      // ✅ Reset stack so user can't go back to onboarding
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: "home" }],
+      // });
+      dispatch(setIsAuthenticated(true));
+    }
   } catch (err) {
     console.log("FAILED:", err);
   }
 };
-
 
 // const handleGoHome = async () => {
 //   try {
@@ -177,6 +177,7 @@ if (hasPhotos) {
                 onPress={handleGoHome}
               />
             )}
+            
           </SafeAreaView>
         </TouchableWithoutFeedback>
       </SafeAreaProvider>

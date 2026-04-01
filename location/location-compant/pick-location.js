@@ -22,7 +22,6 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 
-
 const PickLocation = () => {
 
   const dispatch = useDispatch();
@@ -202,7 +201,7 @@ const PickLocation = () => {
             />
           </>
         )}
-
+        
         {locationAdded && address && !isLoading && (
           <EditLocation
             editFrom={editFrom}

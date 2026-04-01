@@ -6,11 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from "react-redux";
 // PreferListIndex
 
-import { persistor } from '../react-redux-store/store';
+// import { persistor } from '../react-redux-store/store';
 
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase/firebase";
-import { setUser, setHasPreferences , logout} from "../react-redux-store/store-comp/authSlice";
+import { auth } from '../firebase/firebase';
+
+
 const HomeIndex = () => {
 
   const navigation = useNavigation();
@@ -27,35 +28,17 @@ const HomeIndex = () => {
   const dispatch = useDispatch();
 
 
-// const logoutHandler = async () => {
-// //   await signOut(auth); // Firebase logout
-
-// //   dispatch(setUser(null));
-// //   dispatch(setHasPreferences(null));
-// // clearOnReload();
-//   // Optional — only if using redux-persist
-//   // await AsyncStorage.clear();
-//   await signOut(auth);
-
-//   dispatch(logout());
-
-//   persistor.purge(); // 🔥 clears storage
-// };
 
 
 const logoutHandler = async () => {
   try {
-    await signOut(auth);      // Firebase logout
-
-    dispatch(logout());      // reset redux state
-
-    await persistor.purge(); // ✅ clears persisted redux
-  } catch (err) {
-    console.log(err);
+    await signOut(auth);
+  
+    navigation.replace("log-in"); // go to login screen
+  } catch (error) {
+    console.log(error);
   }
 };
-
-
 
 
   return (

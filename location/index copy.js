@@ -1,186 +1,201 @@
 import {
-    View, StyleSheet, Pressable, ScrollView,
-    TouchableWithoutFeedback,
-    Keyboard,
+  View,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useLayoutEffect, useState, useEffect } from "react";
 
-import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
+// import { useNavigation } from "@react-navigation/native";
+import {
+  SafeAreaView,
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import HeaderIocnText from "../components/cutom-header/header-iocn-text";
 import CommpantText from "../components/logo-text/commpant-text";
 import PickLocation from "./location-compant/pick-location";
 
+import { useNavigation } from "@react-navigation/native";
 // import {setShowBnt} from "../../react-redux-store/store-comp/locationSlice";
 import { useSelector, useDispatch } from "react-redux";
 import IconBtn from "../components/button/icon-btn";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { doc, updateDoc, setDoc, } from "firebase/firestore";
-import { auth, db } from "../firebase/firebase";
-
-import { getAuth } from "firebase/auth";
-
-
-
-
-import { setLoading } from "../react-redux-store/store-comp/authSlice";
+import { goHomeHandler } from "../react-redux-store/store-comp/goHomesliceHandler";
 
 const LocationIndex = () => {
-    const navigation = useNavigation();
-    const dispatch = useDispatch();
 
-    const { loading } = useSelector(
-        (state) => state.authStore
-    );
 
-    const photos = useSelector(state => state.photosStore.list) || [];
+  const { showBtn , region } = useSelector(state => state.locationStore);
 
-    const { showBtn, locationAdded, address, region } = useSelector(state => state.locationStore);
-    // onPress={() => navigation.navigate(navigationName)}
+  const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-    const insets = useSafeAreaInsets();
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
-    // const navigation = useNavigation();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTransparent: true,
-            title: "",
-            animation: "fade",
-        });
-    }, [navigation]);
 
-    /* 🔹 SAVE Redux photos → AsyncStorage */
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTransparent: true,
+      title: "",
+      animation: "fade",
+    });
+  }, [navigation]);
 
-    useEffect(() => {
-        const show = Keyboard.addListener('keyboardDidShow', e => {
-            setKeyboardHeight(e.endCoordinates.height);
-        });
-        const hide = Keyboard.addListener('keyboardDidHide', () => {
-            setKeyboardHeight(0);
-        });
+  /* 🔹 SAVE Redux photos → AsyncStorage */
 
-        return () => {
-            show.remove();
-            hide.remove();
-        };
-    }, []);
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hide = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
 
-    const handleBack = () => {
-        // navigation.goBack('upload-your-photo');
-        navigation.goBack();
+    return () => {
+      show.remove();
+      hide.remove();
     };
+  }, []);
+
+  const handleBack = () => {
+    // navigation.goBack('upload-your-photo');
+    // navigation.goBack();
+    navigation.replace("upload-your-photo");
+  };
+
+  const photos = useSelector(
+    (state) => state.photosStore.photoListSelector
+  );
 
 
-    const goHomeHandler = async () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) return;
+  const address = useSelector(
+    (state) => state.locationStore.address
+  );
 
-        try {
-            // 1️⃣ Get preferences/interests from AsyncStorage
-            const preferencesRaw = await AsyncStorage.getItem(
-                `USER_PREFERENCES_${user.uid}`
-            );
-            console.log("Preferences from storage:", preferencesRaw);
-            const interestsRaw = await AsyncStorage.getItem(
-                `USER_INTERESTS_${user.uid}`
-            );
+const preferences = useSelector(
+  (state) => state.preferencesStore.selectedPreferences
+);
 
-            const preferences = preferencesRaw ? JSON.parse(preferencesRaw) : [];
-            const interests = interestsRaw ? JSON.parse(interestsRaw) : [];
-
-            console.log("✅ User:", user.uid);
-            console.log("📸 Photos:", photos);
-            console.log("📍 Location:", region);
-            const userName =  user.fullName || user.name || "user";
-            const docId = `${userName.trim().replace(/\s+/g, "_")}_${user.uid}`;
+const interests = useSelector(
+  (state) => state.interestsStore.selectedInterests
+);
 
 
-            // 2️⃣ Save everything to Firebase
-            await setDoc(
-                doc(db, "usersList", docId),
-                {
-                    name:  user.fullName || user.name || "",
-                    email: user.email || "",
-                    preferences: preferences || [],
-                    interests: interests || [],
-                    photos: photos,   // guaranteed to be an array
-                    location: {
-                        region: region || {},
-                        address: address || "",
-                    },
-                    onboardingComplete: true,
-                },
-                { merge: true }
-            );
+const handleGoHome = async () => {
+  try {
+    console.log("📦 DATA:", {
+      photos,
+      region,
+      address,
+      preferences,
+      interests,
+    });
 
-            // 3️⃣ Navigate to home
-            navigation.replace("home");
+    const result = await dispatch(
+      goHomeHandler({
+        photos,
+        region,
+        address,
+        preferences,
+        interests,
+      })
+    ).unwrap();   // ✅ store result
 
-        } catch (error) {
-            console.log("❌ Save onboarding error:", error);
-        }
-    };
+    console.log("🚀 THUNK DEFINITELY RUNNING");
+    console.log("Result:", result);   // { success: true }
+    console.log("Preferences:", preferences);
+    console.log("Interests:", interests);
 
+const hasPhotos = photos?.some(photo => photo !== null);
 
-
-    return (
-        <>
-            <SafeAreaProvider>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <SafeAreaView style={[styles.container]}>
-                        <ScrollView
-                            keyboardShouldPersistTaps="handled"
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{
-                                paddingBottom: keyboardHeight + 20,
-                            }}
-                        >
-                            <HeaderIocnText
-                                icon="arrow-back-circle-outline"
-                                onBack={handleBack}
-                                BackheaderStyle={styles.backheaderStyle}
-                            />
-
-                            <CommpantText
-                                HeaderIingText="Enable your location"
-                                SummaryText="Choose your location to start find people around you."
-                            />
-
-                            <PickLocation />
+if (hasPhotos) {
+  navigation.replace("home");
+}
+  } catch (err) {
+    console.log("FAILED:", err);
+  }
+};
 
 
+// const handleGoHome = async () => {
+//   try {
+//     console.log("📦 DATA:", {
+//       photos,
+//       region,
+//       address,
+//     });
 
-                        </ScrollView>
+//     await dispatch(
+//       goHomeHandler({
+//         photos,
+//         region,
+//         address,
+//       })
+//     ).unwrap();
 
-                        {showBtn && (
-                            <IconBtn
-                                IonName="arrow-forward-outline"
-                                onPress={goHomeHandler}
-                            />
-                        )}
+//     console.log("🚀 THUNK DEFINITELY RUNNING");
 
-                    </SafeAreaView>
-                </TouchableWithoutFeedback>
-            </SafeAreaProvider>
-        </>
-    );
+//     // navigation.replace("home");
+
+//   } catch (err) {
+//     console.log("FAILED:", err);
+//   }
+// };
+
+  return (
+    <>
+      <SafeAreaProvider>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <SafeAreaView style={[styles.container]}>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingBottom: keyboardHeight + 20,
+              }}
+            >
+              <HeaderIocnText
+                icon="arrow-back-circle-outline"
+                onBack={handleBack}
+                BackheaderStyle={styles.backheaderStyle}
+              />
+
+              <CommpantText
+                HeaderIingText="Enable your location"
+                SummaryText="Choose your location to start find people around you."
+              />
+
+              <PickLocation />
+            </ScrollView>
+
+            {showBtn && (
+              <IconBtn
+                IonName="arrow-forward-outline"
+                onPress={handleGoHome}
+              />
+            )}
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
+      </SafeAreaProvider>
+
+    </>
+  );
 };
 
 export default LocationIndex;
 
 const styles = StyleSheet.create({
-    backheaderStyle: {
-        paddingRight: 0,
-        paddingLeft: 0,
-    },
+  backheaderStyle: {
+    paddingRight: 0,
+    paddingLeft: 0,
+  },
 
-    container: {
-        justifyContent: "flex-start",
-        paddingHorizontal: 24,
-        flexShrink: 1,
-    },
+  container: {
+    justifyContent: "flex-start",
+    paddingHorizontal: 24,
+    flexShrink: 1,
+  },
 });

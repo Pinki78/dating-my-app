@@ -26,12 +26,8 @@ const LoginFrom = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   // const [loading, setLoading] = useState(false);
-  // const { loading } = useSelector(
-  //   (state) => state.authStore
-  // );
-
-   const { onboardingComplete, loading } = useSelector(
-    (state) => state.goHomesliceHandlerStore
+  const { loading } = useSelector(
+    (state) => state.authStore
   );
 
   const {

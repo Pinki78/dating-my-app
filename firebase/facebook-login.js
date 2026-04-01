@@ -1,22 +1,39 @@
 import * as Facebook from "expo-auth-session/providers/facebook";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
 import { FacebookAuthProvider, signInWithCredential } from "firebase/auth";
-import React, { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { auth } from "./firebase";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export function useFacebookLogin(navigation) {
-  const [request, response, promptAsync] = Facebook.useAuthRequest({
-    clientId: "YOUR_FACEBOOK_APP_ID",
+  const redirectUri = AuthSession.makeRedirectUri({
+    useProxy: true,   // 🔥 REQUIRED FOR EXPO GO
   });
 
-  React.useEffect(() => {
+  // console.log("Redirect URI:", redirectUri);
+
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
+    clientId: "901481222379253",
+    redirectUri,
+    responseType: "token",
+  });
+
+  useEffect(() => {
     if (response?.type === "success") {
       const { access_token } = response.authentication;
-      const credential = FacebookAuthProvider.credential(access_token);
 
-      signInWithCredential(auth, credential).then(() => {
-        navigation.replace("log-in");
-      });
+      const credential =
+        FacebookAuthProvider.credential(access_token);
+
+      signInWithCredential(auth, credential)
+        .then(() => navigation.replace("log-in"))
+        .catch((err) => console.log("Firebase error:", err));
     }
   }, [response]);
 
-  return { promptAsync };
+  return {
+    facebookLogin: () => promptAsync({ useProxy: true }),
+  };
 }

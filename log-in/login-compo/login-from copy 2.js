@@ -6,7 +6,7 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import React, { useState,  useEffect } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -17,8 +17,9 @@ import PressableIconButtonGradient from "../../components/button/pressable-gradi
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+
 import { setLoading } from "../../react-redux-store/store-comp/authSlice";
+import { setOnboardingComplete } from "../../react-redux-store/store-comp/goHomesliceHandler";
 
 const LoginFrom = () => {
   const navigation = useNavigation();
@@ -26,8 +27,12 @@ const LoginFrom = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   // const [loading, setLoading] = useState(false);
-  const { loading } = useSelector(
-    (state) => state.authStore
+  // const { loading } = useSelector(
+  //   (state) => state.authStore
+  // );
+
+   const { onboardingComplete, loading } = useSelector(
+    (state) => state.goHomesliceHandlerStore
   );
 
   const {
@@ -39,42 +44,7 @@ const LoginFrom = () => {
     mode: "onSubmit",
   });
 
-  useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const docId = `${user.email}_${user.uid}`;
-      const userRef = doc(db, "usersList", docId);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
-
-      navigation.replace(
-        isOnboardingComplete(userData) ? "home" : "prefer-list"
-      );
-    }
-  });
-
-  return () => unsubscribe();
-}, []);
-
- function isOnboardingComplete(userData) {
-  const hasPreferences =
-    Array.isArray(userData?.preferences) && userData.preferences.length > 0;
-
-  const hasInterests =
-    Array.isArray(userData?.interests) && userData.interests.length > 0;
-
-  const hasLocation =
-    userData?.location &&
-    typeof userData.location.region === "string" &&
-    typeof userData.location.address === "string";
-
-  const hasPhotos =
-    Array.isArray(userData?.photos) && userData.photos.length > 0;
-
-  return hasPreferences && hasInterests && hasLocation && hasPhotos;
-}
-
-async function onSubmit({ identity, password }) {
+const onSubmit = async ({ identity, password }) => {
   try {
     dispatch(setLoading(true));
 
@@ -83,27 +53,42 @@ async function onSubmit({ identity, password }) {
       identity.trim(),
       password
     );
-    const user = userCredential.user;
 
+    const user = userCredential.user;
     const docId = `${user.email}_${user.uid}`;
+
+    // 🔹 Get usersList data (optional, if you need it)
     const userRef = doc(db, "usersList", docId);
     const userSnap = await getDoc(userRef);
-  const userData = userSnap.exists() ? userSnap.data() : {};
+    const userData = userSnap.data();
 
-    if (isOnboardingComplete(userData)) {
-      // ✅ All data exists, go to home
-      navigation.replace("home");
-    } else {
-      // 🚀 Missing data, go to onboarding
+    // 🔹 Get the onboarding/profile data
+    const profileRef = doc(db, "users", docId, "profileData", "profile");
+    const profileSnap = await getDoc(profileRef);
+    const profileData = profileSnap.data();
+
+    // 🔹 Check onboarding status safely
+    const hasPreferences = Array.isArray(profileData?.preferences) && profileData.preferences.length > 0;
+    dispatch(setOnboardingComplete(profileData?.onboardingComplete === true));
+
+    if (!onboardingComplete ) {
       navigation.replace("prefer-list");
+    } else {
+      navigation.replace("home");
     }
   } catch (error) {
-    console.log("Login Error:", error);
-    Alert.alert("Login Error", error.message);
+    console.log("Error Code:", error.code);
+    console.log("Error Message:", error.message);
+
+    if (error.code === "auth/invalid-credential") {
+      Alert.alert("Login Failed", "Invalid email or password.");
+    } else {
+      Alert.alert("Login Error", error.message);
+    }
   } finally {
     dispatch(setLoading(false));
   }
-}
+};
 
 
 

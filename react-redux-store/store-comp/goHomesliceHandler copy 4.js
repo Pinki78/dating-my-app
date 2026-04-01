@@ -1,4 +1,4 @@
-// store/goHomesliceHandler.js
+// store/onboardingActions.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -19,6 +19,7 @@ export const goHomeHandler = createAsyncThunk(
         .trim()
         .replace(/\s+/g, "_")}_${user.uid}`;
 
+      // ✅ Use collection properly
       const profileCollection = collection(
         db,
         "users",
@@ -42,6 +43,7 @@ export const goHomeHandler = createAsyncThunk(
           location: { region, address },
           onboardingComplete: true,
           updatedAt: serverTimestamp(),
+          //  onboardingComplete: true,
         },
         { merge: true }
       );
@@ -54,22 +56,18 @@ export const goHomeHandler = createAsyncThunk(
   }
 );
 
+
 const goHomesliceHandler = createSlice({
   name: "onboarding",
   initialState: {
     loading: false,
     error: null,
-    onboardingComplete: false, // ✅ IMPORTANT
-    isAuthenticated: null,
-      hasOpenedAppBefore: false, // 👈 add this
+    onboardingComplete: false,   // ✅ ADD THIS
   },
   reducers: {
-     setIsAuthenticated: (state, action) => {
-      state.isAuthenticated = action.payload;
+    setOnboardingComplete: (state, action) => {
+      state.onboardingComplete = action.payload;
     },
-    setHasOpenedAppBefore: (state, action) => {
-  state.hasOpenedAppBefore = action.payload;
-},
   },
   extraReducers: (builder) => {
     builder
@@ -79,7 +77,7 @@ const goHomesliceHandler = createSlice({
       })
       .addCase(goHomeHandler.fulfilled, (state) => {
         state.loading = false;
-        state.onboardingComplete = true; // ✅ THIS SWITCHES NAVIGATION
+        state.onboardingComplete = true;   // ✅ SET TRUE HERE
       })
       .addCase(goHomeHandler.rejected, (state, action) => {
         state.loading = false;
@@ -87,7 +85,5 @@ const goHomesliceHandler = createSlice({
       });
   },
 });
-
-export const { setIsAuthenticated, setHasOpenedAppBefore } = goHomesliceHandler.actions;
-
+export const { setOnboardingComplete } = goHomesliceHandler.actions;
 export default goHomesliceHandler.reducer;

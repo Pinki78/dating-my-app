@@ -74,6 +74,7 @@ const ContinueWith = ({ textUsesrNameLink, headerText, handlePressurl, usesrUp2 
     return (
         <>
             <View>
+                
                 <View style={styles.headerRow}>
                     <View style={styles.line} />
                     <Text style={styles.headerText}>{headerText}</Text>

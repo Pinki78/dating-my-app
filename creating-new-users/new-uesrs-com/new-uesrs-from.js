@@ -39,6 +39,8 @@ const NewUsersForm = () => {
     (state) => state.authStore
   );
 
+
+
   const dispatch = useDispatch();
 
   const {
@@ -85,6 +87,7 @@ const NewUsersForm = () => {
       createdAt: serverTimestamp(),
       onboardingComplete: false,
     };
+  
 
     await setDoc(doc(db, "users", docId), userDoc);
 
@@ -99,9 +102,6 @@ const NewUsersForm = () => {
     dispatch(setLoading(false));
   }
 };
-
-
-
 
   return (
     <>

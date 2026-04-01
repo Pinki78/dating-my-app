@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase/firebase';
+import { setIsAuthenticated, setHasOpenedAppBefore } from '../react-redux-store/store-comp/goHomesliceHandler';
 
 
 const HomeIndex = () => {
@@ -30,16 +31,27 @@ const HomeIndex = () => {
 
 
 
+// const logoutHandler = async () => {
+//   try {
+//     await signOut(auth);
+  
+//      navigation.replace("log-in"); // go to login screen
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
 const logoutHandler = async () => {
   try {
     await signOut(auth);
-  
-    navigation.replace("log-in"); // go to login screen
+
+    dispatch(setIsAuthenticated(false));
+   dispatch(setHasOpenedAppBefore(true)); // 👈 important
+
   } catch (error) {
     console.log(error);
   }
 };
-
 
   return (
     <>

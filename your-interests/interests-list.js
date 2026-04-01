@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useMemo } from "react";
 import { Ionicons } from "@expo/vector-icons";
+
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { getAuth } from "firebase/auth";
 import { auth } from "../firebase/firebase";
