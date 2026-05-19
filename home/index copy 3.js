@@ -15,10 +15,43 @@ import { setIsAuthenticated, setHasOpenedAppBefore } from '../react-redux-store/
 
 const HomeIndex = () => {
 
- 
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTransparent: true,
+      title: '',
+      animation: 'fade',
+    });
+  }, [navigation]);
+
+
+  const dispatch = useDispatch();
 
 
 
+
+// const logoutHandler = async () => {
+//   try {
+//     await signOut(auth);
+  
+//      navigation.replace("log-in"); // go to login screen
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const logoutHandler = async () => {
+  try {
+    await signOut(auth);
+
+    dispatch(setIsAuthenticated(false));
+   dispatch(setHasOpenedAppBefore(true)); // 👈 important
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <>

@@ -107,6 +107,7 @@ export default function App() {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator >
+          
           {user ? (
             hasPreferences === false ?  (
               <Stack.Screen name="home" component={HomeIndex} />
